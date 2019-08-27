@@ -79,6 +79,12 @@ docker/build/fetcher:
 	-f docker/Dockerfile-fetcher \
 	--tag asia.gcr.io/amamonitor/fetcher:$(IMAGE_TAG) .
 
+.PHONY: gcloud/builds
+gcloud/builds:
+	gcloud builds submit \
+	--project $(GCP_PROJECT_ID) \
+  	--tag gcr.io/$(GCP_PROJECT_ID)/server:$(IMAGE_TAG)
+
 .PHONY: reset-db
 reset-db:
 	mysql -h $(DB_HOST) -P 13306 -uroot -proot -e "DROP DATABASE IF EXISTS amamonitor"

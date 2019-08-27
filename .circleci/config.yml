@@ -184,7 +184,9 @@ jobs:
 #          command: |
 #            HASH=$(make print-version-hash)
 #            heroku config:set VERSION_HASH=$HASH -a lekcije
-#  deploy-server-image:
+
+# FYI: https://github.com/oinume/blog-lampetty-net-redirector/blob/master/.circleci/config.yml
+#  deploy-backend:
 #    environment:
 #      <<: *env
 #    working_directory: /go/src/github.com/oinume/amamonitor
@@ -222,16 +224,17 @@ jobs:
 #            echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > ./gcp-service-account-key.json
 #            gcloud auth activate-service-account --key-file ./gcp-service-account-key.json
 #      - run:
-#          name: "Deploy docker image to GCR"
+#          name: "Deploy Docker image to GCR and Cloud Run"
 #          command: |
-#            TAG=$(echo "${CIRCLE_BRANCH}" | tr '._/' '-' | tr '[:upper:]' '[:lower:]')-"${CIRCLE_BUILD_NUM}"
-#            echo ${TAG}
-#            make docker/build/server IMAGE_TAG=latest
-#            docker tag asia.gcr.io/oinume-lekcije/server:latest asia.gcr.io/oinume-lekcije/server:${TAG}
-#            gcloud docker -- push asia.gcr.io/amamonitor/server:latest
-#            gcloud docker -- push asia.gcr.io/amamonitor/server:${TAG}
-
-# TODO: Run e2e-test
+#            COMMIT=$(git describe --always --tag)
+#            IMAGE_TAG=$(echo "${CIRCLE_BRANCH}" | tr '._/' '-' | tr '[:upper:]' '[:lower:]')-"${COMMIT}"
+#            echo ${IMAGE_TAG}
+#            make gcloud/builds IMAGE_TAG=${IMAGE_TAG}
+#            if [ $CIRCLE_BRANCH = "master" ]; then
+#              gcloud components install beta
+#              gcloud config set run/region us-central1
+#              gcloud beta run deploy --project ${GCP_PROJECT_ID} --image gcr.io/${GCP_PROJECT_ID}/fetcher:${IMAGE_TAG}
+#            fi
 
 workflows:
   version: 2
