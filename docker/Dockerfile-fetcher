@@ -1,0 +1,28 @@
+FROM golang:1.12-buster AS builder
+
+RUN set -eux \
+	&& apt-get install -y \
+		bash \
+		git \
+		make
+
+RUN echo "" > ~/.gitconfig \
+    && git config --global url."https://github.com".insteadOf git://github.com \
+    && git config --global http.https://gopkg.in.followRedirects true
+
+WORKDIR /go/src/github.com/oinume/amamonitor
+Add . /go/src/github.com/oinume/amamonitor
+RUN make build/fetcher
+
+
+FROM chromedp/headless-shell:latest
+COPY --from=builder /go/src/github.com/oinume/amamonitor/bin/fetcher /fetcher
+
+RUN set -eux \
+	&& apt-get install -y ca-certificates
+RUN cp -fp /headless-shell/* /usr/local/bin/
+
+#EXPOSE ${PORT:-4001}
+#EXPOSE ${GRPC_PORT:-4002}
+
+ENTRYPOINT ["/fetcher"]
