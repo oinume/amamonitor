@@ -100,7 +100,7 @@ jobs:
           name: "Run go/test"
           command: |
             export MYSQL_USER=amamonitor
-            make go-test GO_TEST="go test -v -race -coverprofile=coverage.txt -covermode=atomic"
+            make go/test GO_TEST="go test -v -race -coverprofile=coverage.txt -covermode=atomic"
       - run:
           name: "Upload to codecov"
           command: |
