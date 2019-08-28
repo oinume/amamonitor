@@ -152,13 +152,13 @@ jobs:
 #            rm -rf static
 #            make minify-static
 #      - restore_cache:
-#          key: google-cloud-sdk-221.0.0
+#          key: google-cloud-sdk-258.0.0
 #      - run:
 #          name: "Install google-cloud-sdk"
 #          command: |
 #            ./ci/install-google-cloud-sdk.sh
 #      - save_cache:
-#          key: google-cloud-sdk-221.0.0
+#          key: google-cloud-sdk-258.0.0
 #          paths:
 #          - /google-cloud-sdk
 #      - run:
@@ -186,55 +186,55 @@ jobs:
 #            heroku config:set VERSION_HASH=$HASH -a lekcije
 
 # FYI: https://github.com/oinume/blog-lampetty-net-redirector/blob/master/.circleci/config.yml
-#  deploy-backend:
-#    environment:
-#      <<: *env
-#    working_directory: /go/src/github.com/oinume/amamonitor
-#    docker:
-#      - image: docker:17.11.0-ce-git
-#    steps:
-#      - checkout
-#      - setup_remote_docker:
-#          version: 17.11.0-ce
-#          docker_layer_caching: true
-#      - run:
-#          <<: *gitconfig
-#      - run:
-#          name: Install dependency apk packages
-#          command: |
-#            apk --no-cache add \
-#              bash \
-#              curl \
-#              curl-dev \
-#              make \
-#              python
-#      - restore_cache:
-#          key: google-cloud-sdk-221.0.0
-#      - run:
-#          name: "Install google-cloud-sdk"
-#          command: |
-#            ./ci/install-google-cloud-sdk.sh
-#      - save_cache:
-#          key: google-cloud-sdk-221.0.0
-#          paths:
-#            - /google-cloud-sdk
-#      - run:
-#          name: "Activate GCP service account" # TODO: common
-#          command: |
-#            echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > ./gcp-service-account-key.json
-#            gcloud auth activate-service-account --key-file ./gcp-service-account-key.json
-#      - run:
-#          name: "Deploy Docker image to GCR and Cloud Run"
-#          command: |
-#            COMMIT=$(git describe --always --tag)
-#            IMAGE_TAG=$(echo "${CIRCLE_BRANCH}" | tr '._/' '-' | tr '[:upper:]' '[:lower:]')-"${COMMIT}"
-#            echo ${IMAGE_TAG}
-#            make gcloud/builds IMAGE_TAG=${IMAGE_TAG}
-#            if [ $CIRCLE_BRANCH = "master" ]; then
-#              gcloud components install beta
-#              gcloud config set run/region us-central1
-#              gcloud beta run deploy --project ${GCP_PROJECT_ID} --image gcr.io/${GCP_PROJECT_ID}/fetcher:${IMAGE_TAG}
-#            fi
+  deploy-backend:
+    environment:
+      <<: *env
+    working_directory: /go/src/github.com/oinume/amamonitor
+    docker:
+      - image: docker:18.09-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.09-ce
+          docker_layer_caching: true
+      - run:
+          <<: *gitconfig
+      - run:
+          name: Install dependency apk packages
+          command: |
+            apk --no-cache add \
+              bash \
+              curl \
+              curl-dev \
+              make \
+              python
+      - restore_cache:
+          key: google-cloud-sdk-258.0.0
+      - run:
+          name: "Install google-cloud-sdk"
+          command: |
+            ./ci/install-google-cloud-sdk.sh 244.0.0 /google-cloud-sdk
+      - save_cache:
+          key: google-cloud-sdk-258.0.0
+          paths:
+            - /google-cloud-sdk
+      - run:
+          name: "Activate GCP service account"
+          command: |
+            echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > ./gcp-service-account-key.json
+            gcloud auth activate-service-account --key-file ./gcp-service-account-key.json
+      - run:
+          name: "Deploy Docker image to GCR and Cloud Run"
+          command: |
+            COMMIT=$(git describe --always --tag)
+            IMAGE_TAG=$(echo "${CIRCLE_BRANCH}" | tr '._/' '-' | tr '[:upper:]' '[:lower:]')-"${COMMIT}"
+            echo ${IMAGE_TAG}
+            make gcloud/builds IMAGE_TAG=${IMAGE_TAG}
+            if [ $CIRCLE_BRANCH = "master" ]; then
+              gcloud components install beta
+              gcloud config set run/region asia-northeast1
+              gcloud beta run deploy --project ${GCP_PROJECT_ID} --image gcr.io/${GCP_PROJECT_ID}/fetcher:${IMAGE_TAG}
+            fi
 
 workflows:
   version: 2
@@ -244,6 +244,14 @@ workflows:
           filters:
             branches:
               only: /.*/
+      - deploy-backend:
+          requires:
+            - backend
+          filters:
+            branches:
+              only:
+                - master
+                - /public-.*/
 #      - frontend:
 #          filters:
 #            branches:
@@ -251,14 +259,6 @@ workflows:
 #      - deploy-frontend:
 #          requires:
 #            - frontend
-#          filters:
-#            branches:
-#              only:
-#                - master
-#                - /public-.*/
-#      - deploy-server-image:
-#          requires:
-#            - server
 #          filters:
 #            branches:
 #              only:
