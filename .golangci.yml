@@ -39,6 +39,8 @@ linters-settings:
     disabled-checks:
       - wrapperFunc
       - dupImport # https://github.com/go-critic/go-critic/issues/845
+      - commentFormatting
+      - commentedOutCode
 
 linters:
   enable-all: true
@@ -64,4 +66,4 @@ service:
   golangci-lint-version: 1.17.x # use the fixed version to not introduce new linters unexpectedly
   prepare:
     - echo "here I can run custom commands, but no preparation needed for this repo"
- 
+

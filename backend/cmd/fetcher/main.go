@@ -4,7 +4,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/chromedp/chromedp"
@@ -35,7 +37,8 @@ func main() {
 		chromedp.Value(`#example_After .play .input textarea`, &example),
 	)
 	if err != nil {
-		log.Fatal(err)
+		_, _ = fmt.Fprintln(os.Stderr, err)
+		return
 	}
 	log.Printf("Go's time.After example:\n%s", example)
 }

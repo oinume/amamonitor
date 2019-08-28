@@ -23,29 +23,6 @@ gitconfig: &gitconfig
 #    fi
 
 jobs:
-#  frontend:
-#    environment:
-#      <<: *env
-#    working_directory: /go/src/github.com/oinume/lekcije
-#    docker:
-#      - image: node:10.12-stretch
-#    steps:
-#      - checkout
-#      - run:
-#          <<: *gitconfig
-#      - restore_cache:
-#          <<: *node_modules_cache_key
-#      - run:
-#          <<: *install_npm_packages
-#      - save_cache:
-#          <<: *node_modules_cache_key
-#          paths:
-#            - "/go/src/github.com/oinume/lekcije/node_modules"
-#      - run:
-#          name: "Run tests"
-#          command: |
-#            npm test
-
   backend:
     environment:
       <<: *env
@@ -100,138 +77,85 @@ jobs:
       - restore_cache:
           key: go-commands-{{ checksum ".circleci/cache_version.txt" }}-{{ checksum "go.sum" }}
       - run:
-          name: "Install commands"
+          name: "Install lint"
           command: |
-            if [ ! -e "/go/bin/staticcheck" ]; then
-              make install-commands GO_GET="go get -u"
+            if [ ! -e "/go/bin/golangci-lint" ]; then
+              make install-lint
             fi
       - save_cache:
           key: go-commands-{{ checksum ".circleci/cache_version.txt" }}-{{ checksum "go.sum" }}
           paths:
             - "/go/bin"
+#      - run:
+#          name: "Apply database migrations"
+#          command: |
+#            goose -env=circle_ci up
       - run:
-          name: "Apply database migrations"
-          command: |
-            goose -env=circle_ci up
-      - run:
-          name: "Run go-lint"
-          command: make go-lint
+          name: "Run go/lint"
+          command: make go/lint
       - run:
           name: "Build"
           command: make build
       - run:
-          name: "Run go-test"
+          name: "Run go/test"
           command: |
             export MYSQL_USER=amamonitor
-            make go-test GO_TEST="go test -v -race -coverprofile=coverage.txt -covermode=atomic -p=1"
+            make go/test GO_TEST="go test -v -race -coverprofile=coverage.txt -covermode=atomic"
       - run:
           name: "Upload to codecov"
           command: |
             bash <(curl -s https://codecov.io/bash)
-#  deploy-frontend:
-#    environment:
-#      <<: *env
-#    working_directory: /go/src/github.com/oinume/amamonitor
-#    docker:
-#      - image: node:10.12-stretch
-#    steps:
-#      - checkout
-#      - run:
-#          <<: *gitconfig
-#      - restore_cache:
-#          <<: *node_modules_cache_key
-#      - run:
-#          <<: *install_npm_packages
-#      - save_cache:
-#          <<: *node_modules_cache_key
-#          paths:
-#            - "/go/src/github.com/oinume/amamonitor/node_modules"
-#      - run:
-#          name: "Minify"
-#          command: |
-#            rm -rf static
-#            make minify-static
-#      - restore_cache:
-#          key: google-cloud-sdk-221.0.0
-#      - run:
-#          name: "Install google-cloud-sdk"
-#          command: |
-#            ./ci/install-google-cloud-sdk.sh
-#      - save_cache:
-#          key: google-cloud-sdk-221.0.0
-#          paths:
-#          - /google-cloud-sdk
-#      - run:
-#          name: "Activate GCP service account"
-#          command: |
-#            echo $GCP_SERVICE_ACCOUNT_KEY | base64 --decode > ./gcp-service-account-key.json
-#            gcloud auth activate-service-account --key-file ./gcp-service-account-key.json
-#      - run:
-#          name: "Deploy to GCS"
-#          command: |
-#            HASH=$(make print-version-hash)
-#            gsutil -h "Cache-Control: public,max-age=2592000" -m rsync -d -r static/$HASH gs://asset.lekcije.com/static/$HASH
-#      - run:
-#          name: "Ensure to enable CORS"
-#          command: |
-#            gsutil cors set cors-asset.lekcije.com.json gs://asset.lekcije.com
-#      - run:
-#          name: "Install heroku command"
-#          command: |
-#            ./ci/install-heroku-cli.sh
-#      - run:
-#          name: "Set VERSION_HASH on heroku"
-#          command: |
-#            HASH=$(make print-version-hash)
-#            heroku config:set VERSION_HASH=$HASH -a lekcije
-#  deploy-server-image:
-#    environment:
-#      <<: *env
-#    working_directory: /go/src/github.com/oinume/amamonitor
-#    docker:
-#      - image: docker:17.11.0-ce-git
-#    steps:
-#      - checkout
-#      - setup_remote_docker:
-#          version: 17.11.0-ce
-#          docker_layer_caching: true
-#      - run:
-#          <<: *gitconfig
-#      - run:
-#          name: Install dependency apk packages
-#          command: |
-#            apk --no-cache add \
-#              bash \
-#              curl \
-#              curl-dev \
-#              make \
-#              python
-#      - restore_cache:
-#          key: google-cloud-sdk-221.0.0
-#      - run:
-#          name: "Install google-cloud-sdk"
-#          command: |
-#            ./ci/install-google-cloud-sdk.sh
-#      - save_cache:
-#          key: google-cloud-sdk-221.0.0
-#          paths:
-#            - /google-cloud-sdk
-#      - run:
-#          name: "Activate GCP service account" # TODO: common
-#          command: |
-#            echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > ./gcp-service-account-key.json
-#            gcloud auth activate-service-account --key-file ./gcp-service-account-key.json
-#      - run:
-#          name: "Deploy docker image to GCR"
-#          command: |
-#            TAG=$(echo "${CIRCLE_BRANCH}" | tr '._/' '-' | tr '[:upper:]' '[:lower:]')-"${CIRCLE_BUILD_NUM}"
-#            echo ${TAG}
-#            make docker/build/server IMAGE_TAG=latest
-#            docker tag asia.gcr.io/oinume-lekcije/server:latest asia.gcr.io/oinume-lekcije/server:${TAG}
-#            gcloud docker -- push asia.gcr.io/amamonitor/server:latest
-#            gcloud docker -- push asia.gcr.io/amamonitor/server:${TAG}
 
-# TODO: Run e2e-test
+# FYI: https://github.com/oinume/blog-lampetty-net-redirector/blob/master/.circleci/config.yml
+  deploy-backend:
+    environment:
+      <<: *env
+    working_directory: /go/src/github.com/oinume/amamonitor
+    docker:
+      - image: docker:18.09-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.09-ce
+          docker_layer_caching: true
+      - run:
+          <<: *gitconfig
+      - run:
+          name: Install dependency apk packages
+          command: |
+            apk --no-cache add \
+              bash \
+              curl \
+              curl-dev \
+              make \
+              python
+      - restore_cache:
+          key: google-cloud-sdk-258.0.0
+      - run:
+          name: "Install google-cloud-sdk"
+          command: |
+            ./ci/install-google-cloud-sdk.sh 244.0.0 /google-cloud-sdk
+      - save_cache:
+          key: google-cloud-sdk-258.0.0
+          paths:
+            - /google-cloud-sdk
+      - run:
+          name: "Activate GCP service account"
+          command: |
+            echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > ./gcp-service-account-key.json
+            gcloud auth activate-service-account --key-file ./gcp-service-account-key.json
+      - run:
+          name: "Deploy Docker image to GCR and Cloud Run"
+          command: |
+            COMMIT=$(git describe --always --tag)
+            IMAGE_TAG=$(echo "${CIRCLE_BRANCH}" | tr '._/' '-' | tr '[:upper:]' '[:lower:]')-"${COMMIT}"
+            echo ${IMAGE_TAG}
+            make gcloud/builds IMAGE_TAG=${IMAGE_TAG}
+            if [ $CIRCLE_BRANCH = "master" ]; then
+              gcloud components install beta
+              gcloud config set run/region asia-northeast1
+              gcloud beta run deploy --project ${GCP_PROJECT_ID} --image gcr.io/${GCP_PROJECT_ID}/fetcher:${IMAGE_TAG}
+            fi
 
 workflows:
   version: 2
@@ -241,6 +165,14 @@ workflows:
           filters:
             branches:
               only: /.*/
+      - deploy-backend:
+          requires:
+            - backend
+          filters:
+            branches:
+              only:
+                - master
+                - /public-.*/
 #      - frontend:
 #          filters:
 #            branches:
@@ -248,14 +180,6 @@ workflows:
 #      - deploy-frontend:
 #          requires:
 #            - frontend
-#          filters:
-#            branches:
-#              only:
-#                - master
-#                - /public-.*/
-#      - deploy-server-image:
-#          requires:
-#            - server
 #          filters:
 #            branches:
 #              only:

@@ -37,6 +37,12 @@ vendor:
 install:
 	go install github.com/oinume/lekcije/server/cmd/lekcije
 
+.PHONY: git-config
+git-config:
+	echo "" > ~/.gitconfig
+	git config --global url."https://github.com".insteadOf git://github.com
+	git config --global http.https://gopkg.in.followRedirects true
+
 .PHONY: build
 build: $(foreach command,$(COMMANDS),build/$(command))
 
@@ -67,10 +73,17 @@ goimports:
 go/lint:
 	golangci-lint run
 
-.PHONY: docker/build/server
-docker/build/server:
-	docker build --pull -f docker/Dockerfile-server \
-	--tag asia.gcr.io/oinume-lekcije/server:$(IMAGE_TAG) .
+.PHONY: docker/build/fetcher
+docker/build/fetcher:
+	docker build --pull --no-cache \
+	-f docker/Dockerfile-fetcher \
+	--tag asia.gcr.io/amamonitor/fetcher:$(IMAGE_TAG) .
+
+.PHONY: gcloud/builds
+gcloud/builds:
+	gcloud builds submit \
+	--project $(GCP_PROJECT_ID) \
+  	--tag gcr.io/$(GCP_PROJECT_ID)/server:$(IMAGE_TAG)
 
 .PHONY: reset-db
 reset-db:
