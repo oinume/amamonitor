@@ -81,9 +81,10 @@ docker/build/fetcher:
 
 .PHONY: gcloud/builds
 gcloud/builds:
-	gcloud builds submit \
+	gcloud builds submit . \
 	--project $(GCP_PROJECT_ID) \
-  	--tag gcr.io/$(GCP_PROJECT_ID)/server:$(IMAGE_TAG)
+	--config=gcloud-builds.yml \
+	--substitutions=_IMAGE_TAG=$(IMAGE_TAG)
 
 .PHONY: reset-db
 reset-db:
