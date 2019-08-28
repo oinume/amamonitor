@@ -1,0 +1,13 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - asia.gcr.io/$PROJECT_ID/fetcher:$_IMAGE_TAG
+      - -f
+      - ./docker/Dockerfile-fetcher
+      - .
+substitutions:
+  _IMAGE_TAG: latest
+images:
+  - asia.gcr.io/$PROJECT_ID/fetcher:$_IMAGE_TAG
