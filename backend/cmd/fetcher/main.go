@@ -2,14 +2,18 @@
 // click on an element.
 package main
 
+// fetcher
+// FetchResult
+
 import (
 	"flag"
 	"fmt"
+	"github.com/oinume/amamonitor/backend/fetcher"
 	"io"
 	"net/http"
 	"os"
 
-	"github.com/oinume/amamonitor/cli"
+	"github.com/oinume/amamonitor/backend/cli"
 )
 
 func main() {
@@ -51,6 +55,19 @@ func (m *fetcherMain) run(args []string) error {
 		port := os.Getenv("PORT")
 		return http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
 	}
+
+	client, err := fetcher.NewClientFromURL("https://amaten.com")
+	if err != nil {
+		return err
+	}
+	result, err := client.Fetch("https://amaten.com")
+	if err != nil {
+		return err
+	}
+	result.FirstDiscountRate()
+	result.FirstSalesPrice()
+	result.AllSalesPrices()
+	result.AllDiscountRate()
 
 	return nil
 }
