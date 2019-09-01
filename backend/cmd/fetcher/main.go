@@ -1,19 +1,14 @@
-// Command click is a chromedp example demonstrating how to use a selector to
-// click on an element.
 package main
-
-// fetcher
-// FetchResult
 
 import (
 	"flag"
 	"fmt"
-	"github.com/oinume/amamonitor/backend/fetcher"
 	"io"
 	"net/http"
 	"os"
 
 	"github.com/oinume/amamonitor/backend/cli"
+	"github.com/oinume/amamonitor/backend/fetcher"
 )
 
 func main() {
@@ -38,13 +33,6 @@ func (m *fetcherMain) run(args []string) error {
 	flagSet.SetOutput(m.errStream)
 	var (
 		server = flagSet.Bool("server", false, "Run as a HTTP server")
-		//concurrency     = flagSet.Int("concurrency", 1, "Concurrency of crawler. (default=1)")
-		//continueOnError = flagSet.Bool("continue", true, "Continue to crawl if any error occurred. (default=true)")
-		//specifiedIDs    = flagSet.String("ids", "", "Teacher IDs")
-		//followedOnly    = flagSet.Bool("followedOnly", false, "Crawl followedOnly teachers")
-		//all             = flagSet.Bool("all", false, "Crawl all teachers ordered by evaluation")
-		//newOnly         = flagSet.Bool("new", false, "Crawl all teachers ordered by new")
-		//interval        = flagSet.Duration("interval", 1*time.Second, "Fetch interval. (default=1s)")
 		//logLevel        = flag.String("log-level", "info", "Log level")
 	)
 	if err := flagSet.Parse(args[1:]); err != nil {
@@ -60,47 +48,13 @@ func (m *fetcherMain) run(args []string) error {
 	if err != nil {
 		return err
 	}
-	result, err := client.Fetch("https://amaten.com")
+	giftCards, err := client.Fetch("https://amaten.com")
 	if err != nil {
 		return err
 	}
-	result.FirstDiscountRate()
-	result.FirstSalesPrice()
-	result.AllSalesPrices()
-	result.AllDiscountRate()
+
+	fmt.Printf("discountRate = %v\n", giftCards[0].DiscountRate())
+	fmt.Printf("salesPrice = %v\n", giftCards[0].SalesPrice())
 
 	return nil
 }
-
-/*
-func main() {
-	// create chrome instance
-	ctx, cancel := chromedp.NewContext(
-		context.Background(),
-		chromedp.WithLogf(log.Printf),
-	)
-	defer cancel()
-
-	// create a timeout
-	ctx, cancel = context.WithTimeout(ctx, 15*time.Second)
-	defer cancel()
-
-	// navigate to a page, wait for an element, click
-	var example string
-	err := chromedp.Run(ctx,
-		//chromedp.ExecPath()
-		chromedp.Navigate(`https://golang.org/pkg/time/`),
-		// wait for footer element is visible (ie, page is loaded)
-		chromedp.WaitVisible(`body > footer`),
-		// find and click "Expand All" link
-		chromedp.Click(`#pkg-examples > div`, chromedp.NodeVisible),
-		// retrieve the value of the textarea
-		chromedp.Value(`#example_After .play .input textarea`, &example),
-	)
-	if err != nil {
-		_, _ = fmt.Fprintln(os.Stderr, err)
-		return
-	}
-	log.Printf("Go's time.After example:\n%s", example)
-}
-*/
