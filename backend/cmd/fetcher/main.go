@@ -49,7 +49,7 @@ func (m *fetcherMain) run(args []string) error {
 	if err != nil {
 		return err
 	}
-	giftCards, err := client.Fetch(context.Background())
+	giftCards, err := client.Fetch(context.Background(), &fetcher.FetchOptions{})
 	if err != nil {
 		return err
 	}

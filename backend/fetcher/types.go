@@ -15,6 +15,7 @@ type Type string
 const (
 	amatenType    Type = "amaten.com"
 	giftissueType Type = "giftissue.com"
+	userAgent  = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
 )
 
 type GiftCard struct {
@@ -30,8 +31,12 @@ func (gc *GiftCard) DiscountRate() string {
 	return gc.discountRate
 }
 
+type FetchOptions struct {
+	URL string
+}
+
 type Client interface {
-	Fetch(ctx context.Context) ([]*GiftCard, error)
+	Fetch(ctx context.Context, options *FetchOptions) ([]*GiftCard, error)
 }
 
 func NewClientFromType(t Type) (Client, error) {

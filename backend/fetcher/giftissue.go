@@ -2,12 +2,12 @@ package fetcher
 
 import "context"
 
-func NewGiftissueClient() (*giftissueClient, error) {
-	return &giftissueClient{}, nil
+func NewGiftissueClient() (*GiftissueClient, error) {
+	return &GiftissueClient{}, nil
 }
 
-type giftissueClient struct{}
+type GiftissueClient struct{}
 
-func (c *giftissueClient) Fetch(ctx context.Context) ([]*GiftCard, error) {
+func (c *GiftissueClient) Fetch(ctx context.Context, options *FetchOptions) ([]*GiftCard, error) {
 	panic("implement me")
 }
