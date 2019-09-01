@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io"
@@ -48,7 +49,7 @@ func (m *fetcherMain) run(args []string) error {
 	if err != nil {
 		return err
 	}
-	giftCards, err := client.Fetch("https://amaten.com")
+	giftCards, err := client.Fetch(context.Background())
 	if err != nil {
 		return err
 	}
