@@ -4,12 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
-	"time"
-
-	"github.com/chromedp/cdproto/dom"
-	"github.com/chromedp/chromedp"
 )
 
 const (
@@ -41,42 +36,6 @@ func (c *amatenClient) Fetch(ctx context.Context) ([]*GiftCard, error) {
 	}
 	defer func() { _ = resp.Body.Close() }()
 	return c.decodeJSON(resp.Body)
-}
-
-func (c *amatenClient) FetchHTML(ctx context.Context, url string) (string, error) {
-	// create chrome instance
-	chromeDpCtx, cancel := chromedp.NewContext(
-		context.Background(),
-		chromedp.WithLogf(log.Printf),
-	)
-	c.chromeDpContext = chromeDpCtx
-	defer cancel()
-
-	// create a timeout
-	ctx, cancel = context.WithTimeout(chromeDpCtx, 10*time.Second)
-	defer cancel()
-
-	// navigate to a page, wait for an element, click
-	var html string
-	err := chromedp.Run(
-		c.chromeDpContext,
-		chromedp.Navigate(fetchURL),
-		chromedp.ActionFunc(func(ctx context.Context) error {
-			node, err := dom.GetDocument().Do(ctx)
-			if err != nil {
-				return err
-			}
-			html, err = dom.GetOuterHTML().WithNodeID(node.NodeID).Do(ctx)
-			if err != nil {
-				return err
-			}
-			return nil
-		}))
-	if err != nil {
-		return "", err
-	}
-
-	return html, nil
 }
 
 func (c *amatenClient) setHeaders(req *http.Request) {
