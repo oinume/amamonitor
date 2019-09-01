@@ -28,6 +28,7 @@ func (gc *GiftCard) DiscountRate() string {
 
 type Client interface {
 	Fetch(ctx context.Context) ([]*GiftCard, error)
+	FetchHTML(ctx context.Context, url string) (string, error)
 }
 
 func NewClientFromType(t Type) (Client, error) {
