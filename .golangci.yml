@@ -9,7 +9,7 @@ linters-settings:
           - (github.com/golangci/golangci-lint/pkg/logutils.Log).Errorf
           - (github.com/golangci/golangci-lint/pkg/logutils.Log).Fatalf
   golint:
-    min-confidence: 0
+    min-confidence: 1.0
   gocyclo:
     min-complexity: 10
   maligned:
