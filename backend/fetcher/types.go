@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/oinume/amamonitor/backend/fetcher/amanten"
 )
 
 type Type string
@@ -15,19 +17,26 @@ type Type string
 const (
 	amatenType    Type = "amaten.com"
 	giftissueType Type = "giftissue.com"
-	userAgent  = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
+	UserAgent          = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
 )
 
-type GiftCard struct {
+func NewGiftItem(discountRate string, salesPrice uint) *GiftItem {
+	return &GiftItem{
+		discountRate: discountRate,
+		salesPrice:   salesPrice,
+	}
+}
+
+type GiftItem struct {
 	discountRate string
 	salesPrice   uint
 }
 
-func (gc *GiftCard) SalesPrice() uint {
+func (gc *GiftItem) SalesPrice() uint {
 	return gc.salesPrice
 }
 
-func (gc *GiftCard) DiscountRate() string {
+func (gc *GiftItem) DiscountRate() string {
 	return gc.discountRate
 }
 
@@ -36,13 +45,13 @@ type FetchOptions struct {
 }
 
 type Client interface {
-	Fetch(ctx context.Context, options *FetchOptions) ([]*GiftCard, error)
+	Fetch(ctx context.Context, options *FetchOptions) ([]*GiftItem, error)
 }
 
 func NewClientFromType(t Type) (Client, error) {
 	switch t {
 	case amatenType:
-		return NewAmatenClient()
+		return amanten.NewAmatenClient()
 	case giftissueType:
 		return NewGiftissueClient()
 	}
@@ -81,7 +90,7 @@ var defaultHTTPClient = &http.Client{
 	},
 }
 
-func getDefaultHTTPClient() *http.Client {
+func GetDefaultHTTPClient() *http.Client {
 	//if !config.DefaultVars.EnableFetcherHTTP2 {
 	//	return defaultHTTPClient
 	//}

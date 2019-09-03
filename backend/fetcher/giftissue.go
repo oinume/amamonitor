@@ -8,6 +8,6 @@ func NewGiftissueClient() (*GiftissueClient, error) {
 
 type GiftissueClient struct{}
 
-func (c *GiftissueClient) Fetch(ctx context.Context, options *FetchOptions) ([]*GiftCard, error) {
+func (c *GiftissueClient) Fetch(ctx context.Context, options *FetchOptions) ([]*GiftItem, error) {
 	panic("implement me")
 }
