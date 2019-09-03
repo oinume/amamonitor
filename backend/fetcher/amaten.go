@@ -61,7 +61,6 @@ func (c *amatenClient) setHeaders(req *http.Request) {
 	for k, v := range headers {
 		req.Header.Set(k, v)
 	}
-	//curl 'https://amaten.com/api/gifts?order=&type=amazon&limit=20&last_id=' -H 'Pragma: no-cache' -H 'Sec-Fetch-Site: same-origin' -H 'Accept-Encoding: gzip, deflate, br' -H 'X-CSRF-Token: tYt7Vm86sNzY1TU65VwLcWTibMoaK4nmlhMGPhyun/0=' -H 'Accept-Language: en-US,en;q=0.9,ja;q=0.8' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36' -H 'Sec-Fetch-Mode: cors' -H 'Accept: application/json, text/javascript, */*; q=0.01' -H 'Cache-Control: no-cache' -H 'X-Requested-With: XMLHttpRequest' -H 'Cookie: uid=d94f41c0-e002-4282-8e13-14abac774569; _amaten_session=16c3a8ac5de9eda1a1f60de885c5dcd6; _ga=GA1.2.950863381.1567320935; _gid=GA1.2.347252349.1567320935; _gat=1; _fbp=fb.1.1567320938613.1337910132' -H 'Connection: keep-alive' -H 'Referer: https://amaten.com/exhibitions/amazon' --compressed
 }
 
 func (c *amatenClient) decodeJSON(reader io.Reader) ([]*GiftItem, error) {
