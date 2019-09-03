@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"net/url"
 	"time"
-
-	"github.com/oinume/amamonitor/backend/fetcher/amanten"
 )
 
 type Type string
@@ -51,7 +49,7 @@ type Client interface {
 func NewClientFromType(t Type) (Client, error) {
 	switch t {
 	case amatenType:
-		return amanten.NewAmatenClient()
+		return NewAmatenClient()
 	case giftissueType:
 		return NewGiftissueClient()
 	}
