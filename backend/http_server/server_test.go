@@ -24,17 +24,22 @@ func Test_internalServerError(t *testing.T) {
 }
 
 func Test_server_fetcher(t *testing.T) {
+	// TODO: httptest.NewServer
 	server := New()
 	tests := map[string]struct {
-		path    string
-		handler http.HandlerFunc
+		method         string
+		path           string
+		handler        http.HandlerFunc
+		wantStatusCode int
 	}{
 		"fetcher_ok": {
-			path:    "/fetcher",
-			handler: server.fetcher,
-			// TODO: status code
+			method:         "GET",
+			path:           "/fetcher/all",
+			handler:        server.fetcher,
+			wantStatusCode: http.StatusOK,
 		},
 	}
+
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			req, err := http.NewRequest("GET", test.path, nil)
@@ -44,8 +49,8 @@ func Test_server_fetcher(t *testing.T) {
 			rr := httptest.NewRecorder()
 			test.handler(rr, req)
 			result := rr.Result()
-			if result.StatusCode != http.StatusOK {
-				t.Errorf("unexpected status code: got=%v, want=%v", result.StatusCode, http.StatusOK)
+			if result.StatusCode != test.wantStatusCode {
+				t.Errorf("unexpected status code: got=%v, want=%v", result.StatusCode, test.wantStatusCode)
 			}
 		})
 	}
