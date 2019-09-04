@@ -69,6 +69,9 @@ go/test:
 goimports:
 	goimports -w ./server ./e2e
 
+.PHONY: lint
+lint: go/lint
+
 .PHONY: go/lint
 go/lint:
 	golangci-lint run
