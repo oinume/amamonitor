@@ -11,7 +11,7 @@ import (
 
 type server struct{}
 
-func NewServer() *server {
+func New() *server {
 	return &server{}
 }
 

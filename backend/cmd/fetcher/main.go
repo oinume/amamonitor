@@ -43,7 +43,7 @@ func (m *fetcherMain) run(args []string) error {
 
 	if *server {
 		port := os.Getenv("PORT")
-		server := http_server.NewServer()
+		server := http_server.New()
 		return http.ListenAndServe(fmt.Sprintf(":%s", port), server.NewRouter())
 	}
 
