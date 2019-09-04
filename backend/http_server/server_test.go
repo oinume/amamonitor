@@ -6,22 +6,22 @@ import (
 	"testing"
 )
 
-func Test_internalServerError(t *testing.T) {
-	type args struct {
-		w   http.ResponseWriter
-		err error
-	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-		})
-	}
-}
+//func Test_internalServerError(t *testing.T) {
+//	type args struct {
+//		w   http.ResponseWriter
+//		err error
+//	}
+//	tests := []struct {
+//		name string
+//		args args
+//	}{
+//		// TODO: Add test cases.
+//	}
+//	for _, tt := range tests {
+//		t.Run(tt.name, func(t *testing.T) {
+//		})
+//	}
+//}
 
 func Test_server_fetcher(t *testing.T) {
 	// TODO: httptest.NewServer
@@ -47,6 +47,7 @@ func Test_server_fetcher(t *testing.T) {
 				t.Fatal(err)
 			}
 			rr := httptest.NewRecorder()
+			defer rr.Result().Body.Close()
 			test.handler(rr, req)
 			result := rr.Result()
 			if result.StatusCode != test.wantStatusCode {
@@ -56,20 +57,20 @@ func Test_server_fetcher(t *testing.T) {
 	}
 }
 
-func Test_writeJSON(t *testing.T) {
-	type args struct {
-		w    http.ResponseWriter
-		code int
-		body interface{}
-	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-		})
-	}
-}
+//func Test_writeJSON(t *testing.T) {
+//	type args struct {
+//		w    http.ResponseWriter
+//		code int
+//		body interface{}
+//	}
+//	tests := []struct {
+//		name string
+//		args args
+//	}{
+//		// TODO: Add test cases.
+//	}
+//	for _, tt := range tests {
+//		t.Run(tt.name, func(t *testing.T) {
+//		})
+//	}
+//}
