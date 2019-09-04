@@ -1,6 +1,7 @@
 package http_server
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -34,15 +35,16 @@ func (s *server) fetcher(w http.ResponseWriter, r *http.Request) {
 	if amatenURL := r.FormValue("amatenUrl"); amatenURL != "" {
 		options.URL = amatenURL
 	}
-	_, err = amaten.Fetch(r.Context(), options)
+	fmt.Printf("options = %+v\n", options)
+	giftItems, err := amaten.Fetch(r.Context(), options)
 	if err != nil {
 		internalServerError(w, err)
 		return
 	}
+	fmt.Printf("giftItems = %+v\n", giftItems)
 
 	// TODO: Write gifts to DB
-
-	w.WriteHeader(http.StatusOK)
+	writeJSON(w, http.StatusOK, &giftItems)
 }
 
 func internalServerError(w http.ResponseWriter, err error) {
@@ -79,12 +81,12 @@ func internalServerError(w http.ResponseWriter, err error) {
 	//}
 }
 
-//func writeJSON(w http.ResponseWriter, code int, body interface{}) {
-//	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-//	//w.Header().Set("X-Content-Type-Options", "nosniff")
-//	w.WriteHeader(code)
-//	if err := json.NewEncoder(w).Encode(body); err != nil {
-//		http.Error(w, `{ "status": "Failed to Encode as writeJSON" }`, http.StatusInternalServerError)
-//		return
-//	}
-//}
+func writeJSON(w http.ResponseWriter, code int, body interface{}) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	//w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.WriteHeader(code)
+	if err := json.NewEncoder(w).Encode(body); err != nil {
+		http.Error(w, `{ "status": "Failed to Encode as writeJSON" }`, http.StatusInternalServerError)
+		return
+	}
+}

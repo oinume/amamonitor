@@ -56,8 +56,8 @@ func (m *fetcherMain) run(args []string) error {
 		return err
 	}
 
-	fmt.Printf("discountRate = %v\n", giftCards[0].DiscountRate())
-	fmt.Printf("salesPrice = %v\n", giftCards[0].SalesPrice())
+	fmt.Printf("discountRate = %v\n", giftCards[0].GetDiscountRate())
+	fmt.Printf("salesPrice = %v\n", giftCards[0].GetSalesPrice())
 
 	return nil
 }

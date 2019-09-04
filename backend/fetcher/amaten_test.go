@@ -15,7 +15,7 @@ func Test_AmatenClient_Fetch(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		gifts := []amatenGift{
+		gifts := []AmatenGift{
 			{
 				ID:        123,
 				FaceValue: 10000,
@@ -29,7 +29,7 @@ func Test_AmatenClient_Fetch(t *testing.T) {
 				Rate:      "90.0",
 			},
 		}
-		response := amatenGiftResponse{
+		response := AmatenGiftResponse{
 			Gifts: gifts,
 		}
 

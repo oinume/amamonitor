@@ -20,22 +20,22 @@ const (
 
 func NewGiftItem(discountRate string, salesPrice uint) *GiftItem {
 	return &GiftItem{
-		discountRate: discountRate,
-		salesPrice:   salesPrice,
+		DiscountRate: discountRate,
+		SalesPrice:   salesPrice,
 	}
 }
 
 type GiftItem struct {
-	discountRate string
-	salesPrice   uint
+	DiscountRate string `json:"GetDiscountRate"`
+	SalesPrice   uint   `json:"GetSalesPrice"`
 }
 
-func (gc *GiftItem) SalesPrice() uint {
-	return gc.salesPrice
+func (gc *GiftItem) GetDiscountRate() string {
+	return gc.DiscountRate
 }
 
-func (gc *GiftItem) DiscountRate() string {
-	return gc.discountRate
+func (gc *GiftItem) GetSalesPrice() uint {
+	return gc.SalesPrice
 }
 
 type FetchOptions struct {
