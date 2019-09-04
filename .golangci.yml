@@ -50,6 +50,7 @@ linters:
     - gochecknoglobals
     - scopelint
     - golint
+    - bodyclose
 
 run:
   skip-dirs:
