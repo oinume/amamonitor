@@ -87,7 +87,7 @@ func (c *amatenClient) decodeJSON(reader io.Reader) ([]*GiftItem, error) {
 
 	giftItems := make([]*GiftItem, len(r.Gifts))
 	for i, gift := range r.Gifts {
-		giftItems[i] = NewGiftItem(gift.Rate, gift.Price)
+		giftItems[i] = NewGiftItem(gift.Rate, gift.FaceValue, gift.Price)
 	}
 	return giftItems, nil
 }

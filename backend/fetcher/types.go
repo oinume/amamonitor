@@ -18,24 +18,18 @@ const (
 	UserAgent          = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
 )
 
-func NewGiftItem(discountRate string, salesPrice uint) *GiftItem {
+func NewGiftItem(discountRate string, catalogPrice, salesPrice uint) *GiftItem {
 	return &GiftItem{
 		DiscountRate: discountRate,
+		CatalogPrice: catalogPrice,
 		SalesPrice:   salesPrice,
 	}
 }
 
 type GiftItem struct {
-	DiscountRate string `json:"GetDiscountRate"`
-	SalesPrice   uint   `json:"GetSalesPrice"`
-}
-
-func (gc *GiftItem) GetDiscountRate() string {
-	return gc.DiscountRate
-}
-
-func (gc *GiftItem) GetSalesPrice() uint {
-	return gc.SalesPrice
+	DiscountRate string `json:"discountRate"`
+	CatalogPrice uint   `json:"catalogPrice"`
+	SalesPrice   uint   `json:"salesPrice"`
 }
 
 type FetchOptions struct {
