@@ -5,17 +5,18 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"testing"
 )
 
 const (
 	amatenTargetURL = "https://amaten.com/api/gifts?order=&type=amazon&limit=20&last_id="
 )
 
-type amatenGiftResponse struct {
-	Gifts []amatenGift `json:"gifts"`
+type AmatenGiftResponse struct {
+	Gifts []AmatenGift `json:"gifts"`
 }
 
-type amatenGift struct {
+type AmatenGift struct {
 	ID        int    `json:"id"`
 	FaceValue uint   `json:"face_value"`
 	Price     uint   `json:"price"`
@@ -78,7 +79,7 @@ func (c *amatenClient) decodeJSON(reader io.Reader) ([]*GiftItem, error) {
 	     "users_error_count": 1184
 	   }
 	*/
-	var r amatenGiftResponse
+	var r AmatenGiftResponse
 	if err := json.NewDecoder(reader).Decode(&r); err != nil {
 		return nil, err
 	}
@@ -86,7 +87,48 @@ func (c *amatenClient) decodeJSON(reader io.Reader) ([]*GiftItem, error) {
 
 	giftItems := make([]*GiftItem, len(r.Gifts))
 	for i, gift := range r.Gifts {
-		giftItems[i] = NewGiftItem(gift.Rate, gift.Price)
+		giftItems[i] = NewGiftItem(gift.Rate, gift.FaceValue, gift.Price)
 	}
 	return giftItems, nil
 }
+
+func NewFakeAmatenAPIGiftsHandler(t *testing.T, gifts []AmatenGift) func(w http.ResponseWriter, r *http.Request) {
+	t.Helper()
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		response := AmatenGiftResponse{
+			Gifts: gifts,
+		}
+		if err := json.NewEncoder(w).Encode(&response); err != nil {
+			t.Fatalf("Encode() failed: %v", err)
+		}
+	}
+}
+
+//func FakeAmatenAPIGiftsHandler(w http.ResponseWriter, r *http.Request) {
+//	w.Header().Set("Content-Type", "application/json")
+//	w.WriteHeader(http.StatusOK)
+//
+//	gifts := []AmatenGift{
+//		{
+//			ID:        123,
+//			FaceValue: 10000,
+//			Price:     8710,
+//			Rate:      "87.1",
+//		},
+//		{
+//			ID:        456,
+//			FaceValue: 1000,
+//			Price:     900,
+//			Rate:      "90.0",
+//		},
+//	}
+//	response := amatenGiftResponse{
+//		Gifts: gifts,
+//	}
+//
+//	if err := json.NewEncoder(w).Encode(&response); err != nil {
+//		//t.Fatalf("Encode() failed: %v", err)
+//	}
+//})

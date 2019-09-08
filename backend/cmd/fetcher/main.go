@@ -10,6 +10,7 @@ import (
 
 	"github.com/oinume/amamonitor/backend/cli"
 	"github.com/oinume/amamonitor/backend/fetcher"
+	"github.com/oinume/amamonitor/backend/http_server"
 )
 
 func main() {
@@ -42,7 +43,9 @@ func (m *fetcherMain) run(args []string) error {
 
 	if *server {
 		port := os.Getenv("PORT")
-		return http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
+		server := http_server.New()
+		fmt.Printf("Listening on port %v\n", port)
+		return http.ListenAndServe(fmt.Sprintf(":%s", port), server.NewRouter())
 	}
 
 	client, err := fetcher.NewClientFromURL("https://amaten.com")
@@ -54,8 +57,8 @@ func (m *fetcherMain) run(args []string) error {
 		return err
 	}
 
-	fmt.Printf("discountRate = %v\n", giftCards[0].DiscountRate())
-	fmt.Printf("salesPrice = %v\n", giftCards[0].SalesPrice())
+	fmt.Printf("discountRate = %v\n", giftCards[0].DiscountRate)
+	fmt.Printf("salesPrice = %v\n", giftCards[0].SalesPrice)
 
 	return nil
 }
