@@ -35,13 +35,11 @@ func (s *server) fetcher(w http.ResponseWriter, r *http.Request) {
 	if amatenURL := r.FormValue("amatenUrl"); amatenURL != "" {
 		options.URL = amatenURL
 	}
-	fmt.Printf("options = %+v\n", options)
 	giftItems, err := amaten.Fetch(r.Context(), options)
 	if err != nil {
 		internalServerError(w, err)
 		return
 	}
-	fmt.Printf("giftItems = %+v\n", giftItems)
 
 	// TODO: Write gifts to DB
 	writeJSON(w, http.StatusOK, &giftItems)
