@@ -43,6 +43,9 @@ func (m *fetcherMain) run(args []string) error {
 
 	if *server {
 		port := os.Getenv("PORT")
+		if port == "" {
+			port = "5001"
+		}
 		server := http_server.New()
 		fmt.Printf("Listening on port %v\n", port)
 		return http.ListenAndServe(fmt.Sprintf(":%s", port), server.NewRouter())
