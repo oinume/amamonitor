@@ -99,7 +99,7 @@ kill:
 	kill `cat $(PID)` 2> /dev/null || true
 
 restart: kill clean build/server
-	bin/$(APP)_server & echo $$! > $(PID)
+	bin/server & echo $$! > $(PID)
 
 watch: restart
 	fswatch -o -e ".*" -e vendor -e node_modules -e .venv -i "\\.go$$" . | xargs -n1 -I{} make restart || make kill
