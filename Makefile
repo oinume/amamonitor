@@ -76,11 +76,17 @@ lint: go/lint
 go/lint:
 	golangci-lint run
 
+.PHONY: docker/build
+docker/build: $(foreach command,$(COMMANDS),docker/build/$(command))
+
 .PHONY: docker/build/%
 docker/build/%:
 	docker build --pull --no-cache \
 	-f docker/Dockerfile-$* \
 	--tag asia.gcr.io/amamonitor/$*:$(IMAGE_TAG) .
+
+.PHONY: gcloud/builds
+gcloud/builds: $(foreach command,$(COMMANDS),gcloud/builds/$(command))
 
 .PHONY: gcloud/builds/%
 gcloud/builds/%:
