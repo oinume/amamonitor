@@ -49,7 +49,7 @@ build: $(foreach command,$(COMMANDS),build/$(command))
 # TODO: find server/cmd -type d | xargs basename
 # OR CLIENTS=hoge fuga proto: $(foreach var,$(CLIENTS),proto/$(var))
 build/%:
-	GO111MODULE=on go build -o bin/$* $(BASE_DIR)/backend/cmd/$*
+	CGO_ENABLED=0 GO111MODULE=on go build -o bin/$* $(BASE_DIR)/backend/cmd/$*
 
 clean:
 	${RM} $(foreach command,$(COMMANDS),bin/$(command))
