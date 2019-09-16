@@ -153,8 +153,7 @@ jobs:
             make gcloud/builds IMAGE_TAG=${IMAGE_TAG}
             if [ $CIRCLE_BRANCH = "master" ]; then
               gcloud components install beta
-              gcloud config set run/region asia-northeast1
-              gcloud beta run deploy server --project ${GCP_PROJECT_ID} --image gcr.io/${GCP_PROJECT_ID}/server:${IMAGE_TAG}
+              gcloud beta run deploy server --project=${GCP_PROJECT_ID} --image=gcr.io/${GCP_PROJECT_ID}/server:${IMAGE_TAG} --region=asia-northeast1 --platform=managed
             fi
 
 workflows:
