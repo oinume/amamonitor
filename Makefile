@@ -1,5 +1,5 @@
 APP = amamonitor
-COMMANDS = fetcher
+COMMANDS = fetcher server
 BASE_DIR = github.com/oinume/amamonitor
 VENDOR_DIR = vendor
 PROTO_GEN_DIR = proto-gen
@@ -76,18 +76,24 @@ lint: go/lint
 go/lint:
 	golangci-lint run
 
-.PHONY: docker/build/fetcher
-docker/build/fetcher:
+.PHONY: docker/build
+docker/build: $(foreach command,$(COMMANDS),docker/build/$(command))
+
+.PHONY: docker/build/%
+docker/build/%:
 	docker build --pull --no-cache \
-	-f docker/Dockerfile-fetcher \
-	--tag asia.gcr.io/amamonitor/fetcher:$(IMAGE_TAG) .
+	-f docker/Dockerfile-$* \
+	--tag asia.gcr.io/amamonitor/$*:$(IMAGE_TAG) .
 
 .PHONY: gcloud/builds
-gcloud/builds:
+gcloud/builds: $(foreach command,$(COMMANDS),gcloud/builds/$(command))
+
+.PHONY: gcloud/builds/%
+gcloud/builds/%:
 	gcloud builds submit . \
 	--project $(GCP_PROJECT_ID) \
 	--config=gcloud-builds.yml \
-	--substitutions=_IMAGE_TAG=$(IMAGE_TAG)
+	--substitutions=_IMAGE_TAG=$(IMAGE_TAG),_COMMAND=$*
 
 .PHONY: reset-db
 reset-db:
@@ -99,7 +105,7 @@ kill:
 	kill `cat $(PID)` 2> /dev/null || true
 
 restart: kill clean build/server
-	bin/$(APP)_server & echo $$! > $(PID)
+	bin/server & echo $$! > $(PID)
 
 watch: restart
 	fswatch -o -e ".*" -e vendor -e node_modules -e .venv -i "\\.go$$" . | xargs -n1 -I{} make restart || make kill

@@ -12,17 +12,15 @@ RUN echo "" > ~/.gitconfig \
 
 WORKDIR /go/src/github.com/oinume/amamonitor
 Add . /go/src/github.com/oinume/amamonitor
-RUN make build/fetcher
+RUN make build/server
 
 
-FROM chromedp/headless-shell:latest
-COPY --from=builder /go/src/github.com/oinume/amamonitor/bin/fetcher /fetcher
+FROM alpine
+COPY --from=builder /go/src/github.com/oinume/amamonitor/bin/server /server
 
 RUN set -eux \
-	&& apt-get update \
-	&& apt-get install -y ca-certificates
-RUN cp -fp /headless-shell/* /usr/local/bin/
+	&& apk --update add --no-cache ca-certificates
 
 EXPOSE ${PORT:-5001}
 
-ENTRYPOINT ["/fetcher", "-server"]
+ENTRYPOINT ["/server"]

@@ -3,11 +3,12 @@ steps:
     args:
       - build
       - -t
-      - asia.gcr.io/$PROJECT_ID/fetcher:$_IMAGE_TAG
+      - asia.gcr.io/$PROJECT_ID/$_COMMAND:$_IMAGE_TAG
       - -f
-      - ./docker/Dockerfile-fetcher
+      - ./docker/Dockerfile-$_COMMAND
       - .
 substitutions:
   _IMAGE_TAG: latest
+  _COMMAND: fetcher
 images:
-  - asia.gcr.io/$PROJECT_ID/fetcher:$_IMAGE_TAG
+  - asia.gcr.io/$PROJECT_ID/$_COMMAND:$_IMAGE_TAG

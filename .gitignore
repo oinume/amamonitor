@@ -15,3 +15,5 @@
 .idea
 /bin
 .env
+amamonitor.pid
+
