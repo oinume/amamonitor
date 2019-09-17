@@ -16,14 +16,19 @@ PID = $(APP).pid
 all: build
 
 .PHONY: setup
-setup: install-lint install-commands
+setup: install-lint install-tools
 
-.PHONY: install-commands
-install-commands:
+.PHONY: install-tools
+install-tools:
+	cd tools && go install \
+		github.com/xo/xo
 #	GO111MODULE=off $(GO_GET) bitbucket.org/liamstask/goose/cmd/goose
-#	GO111MODULE=off $(GO_GET) github.com/golang/protobuf/protoc-gen-go
-#	GO111MODULE=off $(GO_GET) github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
-#	GO111MODULE=off $(GO_GET) honnef.co/go/tools/cmd/staticcheck
+
+.PHONY: tools
+tools: ## install dependent tools
+	cd tools && go install \
+		github.com/kouzoh/wrench \
+		go.mercari.io/yo
 
 .PHONY: install-lint
 install-lint:
