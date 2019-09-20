@@ -21,7 +21,8 @@ setup: install-lint install-tools
 .PHONY: install-tools
 install-tools:
 	cd tools && go install \
-		github.com/xo/xo
+		github.com/xo/xo \
+		github.com/pressly/goose/cmd/goose
 #	GO111MODULE=off $(GO_GET) bitbucket.org/liamstask/goose/cmd/goose
 
 .PHONY: tools
@@ -99,6 +100,10 @@ gcloud/builds/%:
 	--project $(GCP_PROJECT_ID) \
 	--config=gcloud-builds.yml \
 	--substitutions=_IMAGE_TAG=$(IMAGE_TAG),_COMMAND=$*
+
+.PHONY: db/goose/%
+db/goose/%:
+	goose mysql "$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/amamonitor?charset=utf8mb4&parseTime=true&loc=UTC" $*
 
 .PHONY: reset-db
 reset-db:
