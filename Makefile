@@ -105,11 +105,10 @@ gcloud/builds/%:
 db/goose/%:
 	goose mysql "$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/amamonitor?charset=utf8mb4&parseTime=true&loc=UTC" $*
 
-.PHONY: reset-db
-reset-db:
-	mysql -h $(DB_HOST) -P 13306 -uroot -proot -e "DROP DATABASE IF EXISTS amamonitor"
-	mysql -h $(DB_HOST) -P 13306 -uroot -proot -e "DROP DATABASE IF EXISTS amamonitor_test"
-	mysql -h $(DB_HOST) -P 13306 -uroot -proot < db/create_database.sql
+.PHONY: db/reset
+db/reset:
+	mysql -h $(MYSQL_HOST) -P $(MYSQL_PORT) -uroot -proot -e "DROP DATABASE IF EXISTS amamonitor; DROP DATABASE IF EXISTS amamonitor_test"
+	mysql -h $(MYSQL_HOST) -P $(MYSQL_PORT) -uroot -proot < db/docker-entrypoint-initdb.d/create_database.sql
 
 kill:
 	kill `cat $(PID)` 2> /dev/null || true
