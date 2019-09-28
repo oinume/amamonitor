@@ -25,12 +25,6 @@ install-tools:
 		github.com/pressly/goose/cmd/goose
 #	GO111MODULE=off $(GO_GET) bitbucket.org/liamstask/goose/cmd/goose
 
-.PHONY: tools
-tools: ## install dependent tools
-	cd tools && go install \
-		github.com/kouzoh/wrench \
-		go.mercari.io/yo
-
 .PHONY: install-lint
 install-lint:
 	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(GOPATH)/bin v1.17.1
