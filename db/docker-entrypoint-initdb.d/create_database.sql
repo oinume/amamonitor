@@ -1,0 +1,12 @@
+CREATE USER IF NOT EXISTS 'amamonitor'@'localhost' identified by 'amamonitor';
+CREATE USER IF NOT EXISTS 'amamonitor'@'%' identified by 'amamonitor';
+CREATE DATABASE IF NOT EXISTS amamonitor DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_bin;
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, LOCK TABLES ON amamonitor.* TO 'amamonitor'@'localhost';
+
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, LOCK TABLES ON amamonitor.* TO 'amamonitor'@'%';
+
+CREATE DATABASE IF NOT EXISTS amamonitor_test DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_bin;
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, LOCK TABLES ON amamonitor_test.* TO 'amamonitor'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, LOCK TABLES ON amamonitor_test.* TO 'amamonitor'@'%';
+
+FLUSH PRIVILEGES;
