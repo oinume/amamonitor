@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS gift_item (
     discount_ratio decimal(3,1) NOT NULL,
     created_at datetime NOT NULL,
     updated_at datetime NOT NULL,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY (`fetch_result_id`)
 ) ROW_FORMAT=DYNAMIC;
 
 -- +goose Down
