@@ -106,8 +106,8 @@ db/reset:
 
 .PHONY: db/xo
 db/xo:
-	mkdir -p model
-	xo "mysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@$(MYSQL_HOST):$(MYSQL_PORT)/$(MYSQL_DATABASE)?charset=utf8mb4&parseTime=true&loc=UTC" -o model
+	mkdir -p backend/model
+	xo "mysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@$(MYSQL_HOST):$(MYSQL_PORT)/$(MYSQL_DATABASE)?charset=utf8mb4&parseTime=true&loc=UTC" -o backend/model
 
 kill:
 	kill `cat $(PID)` 2> /dev/null || true
