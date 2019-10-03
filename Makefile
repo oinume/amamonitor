@@ -97,7 +97,7 @@ gcloud/builds/%:
 
 .PHONY: db/goose/%
 db/goose/%:
-	goose -dir ./db/migration mysql "$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/amamonitor?charset=utf8mb4&parseTime=true&loc=UTC" $*
+	goose -dir ./db/migration mysql "$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):33306)/amamonitor?charset=utf8mb4&parseTime=true&loc=UTC" $*
 
 .PHONY: db/reset
 db/reset:
@@ -107,7 +107,7 @@ db/reset:
 .PHONY: db/xo
 db/xo:
 	mkdir -p backend/model
-	xo "mysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@$(MYSQL_HOST):$(MYSQL_PORT)/$(MYSQL_DATABASE)?charset=utf8mb4&parseTime=true&loc=UTC" -o backend/model
+	xo "mysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@$(MYSQL_HOST):$(MYSQL_PORT_XO)/$(MYSQL_DATABASE)?charset=utf8mb4&parseTime=true&loc=UTC" -o backend/model
 
 .PHONY: test/db/goose/%
 test/db/goose/%:
