@@ -109,6 +109,10 @@ db/xo:
 	mkdir -p backend/model
 	xo "mysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@$(MYSQL_HOST):$(MYSQL_PORT)/$(MYSQL_DATABASE)?charset=utf8mb4&parseTime=true&loc=UTC" -o backend/model
 
+.PHONY: test/db/goose/%
+test/db/goose/%:
+	goose -dir ./db/migration mysql "$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/amamonitor_test?charset=utf8mb4&parseTime=true&loc=UTC" $*
+
 kill:
 	kill `cat $(PID)` 2> /dev/null || true
 

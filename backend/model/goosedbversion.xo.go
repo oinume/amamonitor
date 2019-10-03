@@ -159,25 +159,25 @@ func GooseDbVersionByID(db XODB, id uint64) (*GooseDbVersion, error) {
 // GooseDbVersionByID retrieves a row from 'amamonitor.goose_db_version' as a GooseDbVersion.
 //
 // Generated from index 'id'.
-func GooseDbVersionByID(db XODB, id uint64) (*GooseDbVersion, error) {
-	var err error
-
-	// sql query
-	const sqlstr = `SELECT ` +
-		`id, version_id, is_applied, tstamp ` +
-		`FROM amamonitor.goose_db_version ` +
-		`WHERE id = ?`
-
-	// run query
-	XOLog(sqlstr, id)
-	gdv := GooseDbVersion{
-		_exists: true,
-	}
-
-	err = db.QueryRow(sqlstr, id).Scan(&gdv.ID, &gdv.VersionID, &gdv.IsApplied, &gdv.Tstamp)
-	if err != nil {
-		return nil, err
-	}
-
-	return &gdv, nil
-}
+//func GooseDbVersionByID(db XODB, id uint64) (*GooseDbVersion, error) {
+//	var err error
+//
+//	// sql query
+//	const sqlstr = `SELECT ` +
+//		`id, version_id, is_applied, tstamp ` +
+//		`FROM amamonitor.goose_db_version ` +
+//		`WHERE id = ?`
+//
+//	// run query
+//	XOLog(sqlstr, id)
+//	gdv := GooseDbVersion{
+//		_exists: true,
+//	}
+//
+//	err = db.QueryRow(sqlstr, id).Scan(&gdv.ID, &gdv.VersionID, &gdv.IsApplied, &gdv.Tstamp)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	return &gdv, nil
+//}

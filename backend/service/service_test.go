@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -25,15 +26,27 @@ func Test_Service_CreateFetchResultGiftItems(t *testing.T) {
 		giftItems []*fetcher.GiftItem
 		createdAt time.Time
 	}
+
+	createdAt := time.Date(2019, 9, 1, 15, 55, 20, 0, time.UTC)
 	tests := map[string]struct {
 		args    args
 		wantErr bool
 	}{
-		// TODO: Add test cases.
-		"": {},
+		"normal": {
+			args: args{
+				giftItems: []*fetcher.GiftItem{
+					{DiscountRate: "93.0", CatalogPrice: 1000, SalesPrice: 930},
+					{DiscountRate: "89.5", CatalogPrice: 7390, SalesPrice: 6621},
+				},
+				createdAt: createdAt,
+			},
+			wantErr: false,
+		},
 	}
 
-	db, err := dburl.Open(config.DefaultVars.XODBURL())
+	dbURL := model.ReplaceToTestDBURL(t, config.DefaultVars.XODBURL())
+	fmt.Printf("dbURL = %v\n", dbURL)
+	db, err := dburl.Open(dbURL)
 	if err != nil {
 		t.Fatal(err)
 	}

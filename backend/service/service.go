@@ -34,7 +34,6 @@ func (s *Service) CreateFetchResultGiftItems(
 	}
 	for _, gi := range giftItems {
 		giftItem := model.GiftItem{
-			ID:             0,
 			FetchResultID:  fetchResult.ID,
 			SalesPrice:     gi.SalesPrice,
 			CataloguePrice: gi.CatalogPrice,
