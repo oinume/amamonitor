@@ -70,7 +70,7 @@ goimports:
 	goimports -w ./server ./e2e
 
 .PHONY: lint
-lint: go/lint
+lint: install-lint go/lint
 
 .PHONY: go/lint
 go/lint:
@@ -116,7 +116,7 @@ test/db/create:
 	mysql -uroot -proot -h$(MYSQL_HOST) -P$(MYSQL_PORT) < db/docker-entrypoint-initdb.d/create_database.sql
 
 .PHONY: test/db/goose/%
-test/db/goose/%:
+test/db/goose/%: install-tools
 	goose -dir ./db/migration mysql "$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/amamonitor_test?charset=utf8mb4&parseTime=true&loc=UTC" $*
 
 kill:
