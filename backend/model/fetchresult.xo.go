@@ -37,21 +37,28 @@ func (fr *FetchResult) Insert(db XODB) error {
 		return errors.New("insert failed: already exists")
 	}
 
-	// sql insert query, primary key must be provided
+	// sql insert query, primary key provided by autoincrement
 	const sqlstr = `INSERT INTO amamonitor.fetch_result (` +
-		`id, created_at, updated_at` +
+		`created_at, updated_at` +
 		`) VALUES (` +
-		`?, ?, ?` +
+		`?, ?` +
 		`)`
 
 	// run query
-	XOLog(sqlstr, fr.ID, fr.CreatedAt, fr.UpdatedAt)
-	_, err = db.Exec(sqlstr, fr.ID, fr.CreatedAt, fr.UpdatedAt)
+	XOLog(sqlstr, fr.CreatedAt, fr.UpdatedAt)
+	res, err := db.Exec(sqlstr, fr.CreatedAt, fr.UpdatedAt)
 	if err != nil {
 		return err
 	}
 
-	// set existence
+	// retrieve id
+	id, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	// set primary key and existence
+	fr.ID = uint(id)
 	fr._exists = true
 
 	return nil

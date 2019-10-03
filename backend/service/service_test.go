@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/oinume/amamonitor/backend/config"
-
 	"github.com/oinume/amamonitor/backend/fetcher"
 	"github.com/oinume/amamonitor/backend/model"
 	"github.com/xo/dburl"
@@ -50,12 +50,11 @@ func Test_Service_CreateFetchResultGiftItems(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer func() { _ = db.Close() }()
+	s := &Service{db: db}
 
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			s := &Service{
-				db: db,
-			}
 			// TODO: model.Transaction
 			err := s.CreateFetchResultGiftItems(context.Background(), db, tt.args.giftItems, tt.args.createdAt)
 			if (err != nil) != tt.wantErr {
