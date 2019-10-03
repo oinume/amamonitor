@@ -4,10 +4,20 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
+
+	"github.com/oinume/amamonitor/backend/config"
+	"github.com/oinume/amamonitor/backend/service"
+	"github.com/xo/dburl"
 
 	"github.com/oinume/amamonitor/backend/fetcher"
 )
+
+func TestMain(m *testing.M) {
+	config.MustProcessDefault()
+	os.Exit(m.Run())
+}
 
 func Test_server_fetcher(t *testing.T) {
 	gifts := []fetcher.AmatenGift{
@@ -28,7 +38,11 @@ func Test_server_fetcher(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(fakeHandler))
 	defer ts.Close()
 
-	server := New()
+	db, err := dburl.Open(config.DefaultVars.XODBURL())
+	if err != nil {
+		t.Fatal(err)
+	}
+	server := New(db, service.New(db) /* TODO: mock */)
 	tests := map[string]struct {
 		method         string
 		path           string

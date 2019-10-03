@@ -2,13 +2,21 @@ package service
 
 import (
 	"context"
+	"os"
 	"testing"
 	"time"
+
+	"github.com/oinume/amamonitor/backend/config"
 
 	"github.com/oinume/amamonitor/backend/fetcher"
 	"github.com/oinume/amamonitor/backend/model"
 	"github.com/xo/dburl"
 )
+
+func TestMain(m *testing.M) {
+	config.MustProcessDefault()
+	os.Exit(m.Run())
+}
 
 func Test_Service_CreateFetchResultGiftItems(t *testing.T) {
 	type args struct {
@@ -25,11 +33,11 @@ func Test_Service_CreateFetchResultGiftItems(t *testing.T) {
 		"": {},
 	}
 
-	// TODO: config
-	db, err := dburl.Open("")
+	db, err := dburl.Open(config.DefaultVars.XODBURL())
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
 			s := &Service{
