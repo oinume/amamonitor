@@ -21,8 +21,6 @@ func TestMain(m *testing.M) {
 
 func Test_Service_CreateFetchResultGiftItems(t *testing.T) {
 	type args struct {
-		ctx       context.Context
-		db        model.XODB
 		giftItems []*fetcher.GiftItem
 		createdAt time.Time
 	}
