@@ -108,7 +108,7 @@ db/reset:
 .PHONY: db/xo
 db/xo:
 	mkdir -p backend/model
-	xo "mysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@$(MYSQL_HOST):$(MYSQL_PORT_XO)/$(MYSQL_DATABASE)?charset=utf8mb4&parseTime=true&loc=UTC" -o backend/model
+	xo --template-path=./db/templates "mysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@$(MYSQL_HOST):$(MYSQL_PORT_XO)/$(MYSQL_DATABASE)?charset=utf8mb4&parseTime=true&loc=UTC" -o backend/model
 	rm -f backend/model/goosedbversion.xo.go
 
 .PHONY: test/db/create
