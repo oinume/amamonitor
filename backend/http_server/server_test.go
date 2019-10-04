@@ -7,11 +7,11 @@ import (
 	"os"
 	"testing"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/oinume/amamonitor/backend/config"
+	"github.com/oinume/amamonitor/backend/fetcher"
 	"github.com/oinume/amamonitor/backend/service"
 	"github.com/xo/dburl"
-
-	"github.com/oinume/amamonitor/backend/fetcher"
 )
 
 func TestMain(m *testing.M) {
