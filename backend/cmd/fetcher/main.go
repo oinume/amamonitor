@@ -8,13 +8,13 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/oinume/amamonitor/backend/config"
-	"github.com/oinume/amamonitor/backend/service"
-	"github.com/xo/dburl"
-
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/oinume/amamonitor/backend/cli"
+	"github.com/oinume/amamonitor/backend/config"
 	"github.com/oinume/amamonitor/backend/fetcher"
 	"github.com/oinume/amamonitor/backend/http_server"
+	"github.com/oinume/amamonitor/backend/service"
+	"github.com/xo/dburl"
 )
 
 func main() {
