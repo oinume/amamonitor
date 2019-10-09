@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/oinume/amamonitor/backend/fetcher"
@@ -33,11 +35,15 @@ func (s *Service) CreateFetchResultGiftItems(
 		return err
 	}
 	for _, gi := range giftItems {
+		rate, err := strconv.ParseFloat(gi.DiscountRate, 10)
+		if err != nil {
+			return fmt.Errorf("failed to parse DiscountRate: %v", err)
+		}
 		giftItem := model.GiftItem{
 			FetchResultID:  fetchResult.ID,
 			SalesPrice:     gi.SalesPrice,
 			CataloguePrice: gi.CatalogPrice,
-			DiscountRatio:  0,
+			DiscountRate:   rate,
 			CreatedAt:      createdAt,
 			UpdatedAt:      createdAt,
 		}
