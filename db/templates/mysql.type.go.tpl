@@ -1,5 +1,5 @@
 {{- $short := (shortname .Name "err" "res" "sqlstr" "db" "XOLog") -}}
-{{- $table := (schema .Schema .Table.TableName) -}}
+{{- $table := (.Table.TableName) -}}
 {{- if .Comment -}}
 // {{ .Comment }}
 {{- else -}}

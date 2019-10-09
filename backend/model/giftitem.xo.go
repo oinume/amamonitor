@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// GiftItem represents a row from 'amamonitor.gift_item'.
+// GiftItem represents a row from 'gift_item'.
 type GiftItem struct {
 	ID             uint      `json:"id"`              // id
 	FetchResultID  uint      `json:"fetch_result_id"` // fetch_result_id
@@ -42,7 +42,7 @@ func (gi *GiftItem) Insert(db XODB) error {
 	}
 
 	// sql insert query, primary key provided by autoincrement
-	const sqlstr = `INSERT INTO amamonitor.gift_item (` +
+	const sqlstr = `INSERT INTO gift_item (` +
 		`fetch_result_id, sales_price, catalogue_price, discount_ratio, created_at, updated_at` +
 		`) VALUES (` +
 		`?, ?, ?, ?, ?, ?` +
@@ -83,7 +83,7 @@ func (gi *GiftItem) Update(db XODB) error {
 	}
 
 	// sql query
-	const sqlstr = `UPDATE amamonitor.gift_item SET ` +
+	const sqlstr = `UPDATE gift_item SET ` +
 		`fetch_result_id = ?, sales_price = ?, catalogue_price = ?, discount_ratio = ?, created_at = ?, updated_at = ?` +
 		` WHERE id = ?`
 
@@ -117,7 +117,7 @@ func (gi *GiftItem) Delete(db XODB) error {
 	}
 
 	// sql query
-	const sqlstr = `DELETE FROM amamonitor.gift_item WHERE id = ?`
+	const sqlstr = `DELETE FROM gift_item WHERE id = ?`
 
 	// run query
 	XOLog(sqlstr, gi.ID)

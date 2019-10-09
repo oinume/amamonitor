@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// FetchResult represents a row from 'amamonitor.fetch_result'.
+// FetchResult represents a row from 'fetch_result'.
 type FetchResult struct {
 	ID        uint      `json:"id"`         // id
 	CreatedAt time.Time `json:"created_at"` // created_at
@@ -38,7 +38,7 @@ func (fr *FetchResult) Insert(db XODB) error {
 	}
 
 	// sql insert query, primary key provided by autoincrement
-	const sqlstr = `INSERT INTO amamonitor.fetch_result (` +
+	const sqlstr = `INSERT INTO fetch_result (` +
 		`created_at, updated_at` +
 		`) VALUES (` +
 		`?, ?` +
@@ -79,7 +79,7 @@ func (fr *FetchResult) Update(db XODB) error {
 	}
 
 	// sql query
-	const sqlstr = `UPDATE amamonitor.fetch_result SET ` +
+	const sqlstr = `UPDATE fetch_result SET ` +
 		`created_at = ?, updated_at = ?` +
 		` WHERE id = ?`
 
@@ -113,7 +113,7 @@ func (fr *FetchResult) Delete(db XODB) error {
 	}
 
 	// sql query
-	const sqlstr = `DELETE FROM amamonitor.fetch_result WHERE id = ?`
+	const sqlstr = `DELETE FROM fetch_result WHERE id = ?`
 
 	// run query
 	XOLog(sqlstr, fr.ID)
