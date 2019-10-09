@@ -37,7 +37,7 @@ func (s *Service) CreateFetchResultGiftItems(
 			FetchResultID:  fetchResult.ID,
 			SalesPrice:     gi.SalesPrice,
 			CataloguePrice: gi.CatalogPrice,
-			DiscountRatio:  0,
+			DiscountRate:   0,
 			CreatedAt:      createdAt,
 			UpdatedAt:      createdAt,
 		}
