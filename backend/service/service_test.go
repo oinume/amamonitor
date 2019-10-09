@@ -53,20 +53,28 @@ func Test_Service_CreateFetchResultGiftItems(t *testing.T) {
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
 			ctx := context.Background()
-			var gotFetchResult *model.FetchResult
+			var (
+				gotFetchResult *model.FetchResult
+				gotGiftItems   []*model.GiftItem
+			)
 			err := s.Transaction(ctx, nil, func(ctx context.Context, tx *sql.Tx) error {
-				fr, err := s.CreateFetchResultGiftItems(ctx, db, tt.args.giftItems, tt.args.createdAt)
+				var err error
+				gotFetchResult, gotGiftItems, err = s.CreateFetchResultGiftItems(
+					ctx, db, tt.args.giftItems, tt.args.createdAt,
+				)
 				if err != nil {
 					return err
 				}
-				gotFetchResult = fr
 				return nil
 			})
 			if (err != nil) != tt.wantErr {
 				t.Fatalf("CreateFetchResultGiftItems() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			if got, want := gotFetchResult.CreatedAt, createdAt; got != want {
+			if got, want := gotFetchResult.CreatedAt, tt.args.createdAt; got != want {
 				t.Errorf("unexpected createdAt: got=%v, want=%v", got, want)
+			}
+			if got, want := len(gotGiftItems), len(tt.args.giftItems); got != want {
+				t.Errorf("unexpected giftItems length: got=%v, want=%v", got, want)
 			}
 		})
 	}

@@ -44,16 +44,17 @@ func (s *Service) CreateFetchResultGiftItems(
 	db model.XODB,
 	giftItems []*fetcher.GiftItem,
 	createdAt time.Time,
-) (*model.FetchResult, error) {
+) (*model.FetchResult, []*model.GiftItem, error) {
 	fetchResult := &model.FetchResult{
 		CreatedAt: createdAt,
 		UpdatedAt: createdAt,
 	}
 	if err := fetchResult.Insert(db); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	for _, gi := range giftItems {
-		giftItem := model.GiftItem{
+	items := make([]*model.GiftItem, len(giftItems))
+	for i, gi := range giftItems {
+		giftItem := &model.GiftItem{
 			FetchResultID:  fetchResult.ID,
 			SalesPrice:     gi.SalesPrice,
 			CataloguePrice: gi.CatalogPrice,
@@ -62,8 +63,9 @@ func (s *Service) CreateFetchResultGiftItems(
 			UpdatedAt:      createdAt,
 		}
 		if err := giftItem.Insert(db); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
+		items[i] = giftItem
 	}
-	return fetchResult, nil
+	return fetchResult, items, nil
 }

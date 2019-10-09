@@ -46,26 +46,38 @@ func (s *server) fetcher(w http.ResponseWriter, r *http.Request) {
 	if amatenURL := r.FormValue("amatenUrl"); amatenURL != "" {
 		options.URL = amatenURL
 	}
-	giftItems, err := amaten.Fetch(r.Context(), options)
+	fetchedGiftItems, err := amaten.Fetch(r.Context(), options)
 	if err != nil {
 		internalServerError(w, err)
 		return
 	}
 
-	var fetchResult *model.FetchResult
+	var (
+		fetchResult *model.FetchResult
+		giftItems   []*model.GiftItem
+	)
 	if err := model.Transaction(r.Context(), s.db, nil, func(ctx context.Context, tx *sql.Tx) error {
-		fr, err := s.service.CreateFetchResultGiftItems(r.Context(), tx, giftItems, time.Now())
+		var err error
+		fetchResult, giftItems, err = s.service.CreateFetchResultGiftItems(
+			r.Context(), tx, fetchedGiftItems, time.Now(),
+		)
 		if err != nil {
 			return err
 		}
-		fetchResult = fr
 		return nil
 	}); err != nil {
 		internalServerError(w, err)
 		return
 	}
 
-	writeJSON(w, http.StatusOK, &fetchResult)
+	type body struct {
+		FetchResult *model.FetchResult `json:"fetchResult"`
+		GiftItems   []*model.GiftItem  `json:"giftItems"`
+	}
+	writeJSON(w, http.StatusOK, &body{
+		FetchResult: fetchResult,
+		GiftItems:   giftItems,
+	})
 }
 
 func internalServerError(w http.ResponseWriter, err error) {
