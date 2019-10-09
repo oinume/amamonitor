@@ -52,17 +52,20 @@ func (s *server) fetcher(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var fetchResult *model.FetchResult
 	if err := model.Transaction(r.Context(), s.db, nil, func(ctx context.Context, tx *sql.Tx) error {
-		if err := s.service.CreateFetchResultGiftItems(r.Context(), tx, giftItems, time.Now()); err != nil {
+		fr, err := s.service.CreateFetchResultGiftItems(r.Context(), tx, giftItems, time.Now())
+		if err != nil {
 			return err
 		}
+		fetchResult = fr
 		return nil
 	}); err != nil {
 		internalServerError(w, err)
 		return
 	}
 
-	writeJSON(w, http.StatusOK, &giftItems)
+	writeJSON(w, http.StatusOK, &fetchResult)
 }
 
 func internalServerError(w http.ResponseWriter, err error) {

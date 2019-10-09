@@ -10,6 +10,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/oinume/amamonitor/backend/config"
 	"github.com/oinume/amamonitor/backend/fetcher"
+	"github.com/oinume/amamonitor/backend/model"
 	"github.com/oinume/amamonitor/backend/service"
 	"github.com/xo/dburl"
 )
@@ -38,7 +39,8 @@ func Test_server_fetcher(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(fakeHandler))
 	defer ts.Close()
 
-	db, err := dburl.Open(config.DefaultVars.XODBURL())
+	dbURL := model.ReplaceToTestDBURL(t, config.DefaultVars.XODBURL())
+	db, err := dburl.Open(dbURL)
 	if err != nil {
 		t.Fatal(err)
 	}
