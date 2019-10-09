@@ -39,7 +39,6 @@ jobs:
           MYSQL_PASSWORD: "amamonitor"
           MYSQL_HOST: "127.0.0.1"
           MYSQL_PORT: "3306"
-          MYSQL_PORT_XO: "3306"
           MYSQL_DATABASE: "amamonitor_test"
           VERSION_HASH: "_version_"
           NODE_ENV: "test"
@@ -95,11 +94,11 @@ jobs:
           name: "Apply database migrations"
           command: |
             export MYSQL_USER=amamonitor
-            make install-tools db/goose/up test/db/goose/up
+            make install-tools test/db/goose/up
       - run:
           name: "Run go/test"
           command: |
-            export MYSQL_USER=amamonitor MYSQL_PORT_XO=3306
+            export MYSQL_USER=amamonitor
             make go/test GO_TEST="go test -v -race -coverprofile=coverage.txt -covermode=atomic"
       - run:
           name: "Upload to codecov"
