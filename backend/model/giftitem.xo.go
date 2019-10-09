@@ -14,7 +14,7 @@ type GiftItem struct {
 	FetchResultID  uint      `json:"fetch_result_id"` // fetch_result_id
 	SalesPrice     uint      `json:"sales_price"`     // sales_price
 	CataloguePrice uint      `json:"catalogue_price"` // catalogue_price
-	DiscountRatio  float64   `json:"discount_ratio"`  // discount_ratio
+	DiscountRate   float64   `json:"discount_rate"`   // discount_rate
 	CreatedAt      time.Time `json:"created_at"`      // created_at
 	UpdatedAt      time.Time `json:"updated_at"`      // updated_at
 
@@ -43,14 +43,14 @@ func (gi *GiftItem) Insert(db XODB) error {
 
 	// sql insert query, primary key provided by autoincrement
 	const sqlstr = `INSERT INTO gift_item (` +
-		`fetch_result_id, sales_price, catalogue_price, discount_ratio, created_at, updated_at` +
+		`fetch_result_id, sales_price, catalogue_price, discount_rate, created_at, updated_at` +
 		`) VALUES (` +
 		`?, ?, ?, ?, ?, ?` +
 		`)`
 
 	// run query
-	XOLog(sqlstr, gi.FetchResultID, gi.SalesPrice, gi.CataloguePrice, gi.DiscountRatio, gi.CreatedAt, gi.UpdatedAt)
-	res, err := db.Exec(sqlstr, gi.FetchResultID, gi.SalesPrice, gi.CataloguePrice, gi.DiscountRatio, gi.CreatedAt, gi.UpdatedAt)
+	XOLog(sqlstr, gi.FetchResultID, gi.SalesPrice, gi.CataloguePrice, gi.DiscountRate, gi.CreatedAt, gi.UpdatedAt)
+	res, err := db.Exec(sqlstr, gi.FetchResultID, gi.SalesPrice, gi.CataloguePrice, gi.DiscountRate, gi.CreatedAt, gi.UpdatedAt)
 	if err != nil {
 		return err
 	}
@@ -84,12 +84,12 @@ func (gi *GiftItem) Update(db XODB) error {
 
 	// sql query
 	const sqlstr = `UPDATE gift_item SET ` +
-		`fetch_result_id = ?, sales_price = ?, catalogue_price = ?, discount_ratio = ?, created_at = ?, updated_at = ?` +
+		`fetch_result_id = ?, sales_price = ?, catalogue_price = ?, discount_rate = ?, created_at = ?, updated_at = ?` +
 		` WHERE id = ?`
 
 	// run query
-	XOLog(sqlstr, gi.FetchResultID, gi.SalesPrice, gi.CataloguePrice, gi.DiscountRatio, gi.CreatedAt, gi.UpdatedAt, gi.ID)
-	_, err = db.Exec(sqlstr, gi.FetchResultID, gi.SalesPrice, gi.CataloguePrice, gi.DiscountRatio, gi.CreatedAt, gi.UpdatedAt, gi.ID)
+	XOLog(sqlstr, gi.FetchResultID, gi.SalesPrice, gi.CataloguePrice, gi.DiscountRate, gi.CreatedAt, gi.UpdatedAt, gi.ID)
+	_, err = db.Exec(sqlstr, gi.FetchResultID, gi.SalesPrice, gi.CataloguePrice, gi.DiscountRate, gi.CreatedAt, gi.UpdatedAt, gi.ID)
 	return err
 }
 
@@ -140,7 +140,7 @@ func GiftItemsByFetchResultID(db XODB, fetchResultID uint) ([]*GiftItem, error) 
 
 	// sql query
 	const sqlstr = `SELECT ` +
-		`id, fetch_result_id, sales_price, catalogue_price, discount_ratio, created_at, updated_at ` +
+		`id, fetch_result_id, sales_price, catalogue_price, discount_rate, created_at, updated_at ` +
 		`FROM amamonitor.gift_item ` +
 		`WHERE fetch_result_id = ?`
 
@@ -160,7 +160,7 @@ func GiftItemsByFetchResultID(db XODB, fetchResultID uint) ([]*GiftItem, error) 
 		}
 
 		// scan
-		err = q.Scan(&gi.ID, &gi.FetchResultID, &gi.SalesPrice, &gi.CataloguePrice, &gi.DiscountRatio, &gi.CreatedAt, &gi.UpdatedAt)
+		err = q.Scan(&gi.ID, &gi.FetchResultID, &gi.SalesPrice, &gi.CataloguePrice, &gi.DiscountRate, &gi.CreatedAt, &gi.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -179,7 +179,7 @@ func GiftItemByID(db XODB, id uint) (*GiftItem, error) {
 
 	// sql query
 	const sqlstr = `SELECT ` +
-		`id, fetch_result_id, sales_price, catalogue_price, discount_ratio, created_at, updated_at ` +
+		`id, fetch_result_id, sales_price, catalogue_price, discount_rate, created_at, updated_at ` +
 		`FROM amamonitor.gift_item ` +
 		`WHERE id = ?`
 
@@ -189,7 +189,7 @@ func GiftItemByID(db XODB, id uint) (*GiftItem, error) {
 		_exists: true,
 	}
 
-	err = db.QueryRow(sqlstr, id).Scan(&gi.ID, &gi.FetchResultID, &gi.SalesPrice, &gi.CataloguePrice, &gi.DiscountRatio, &gi.CreatedAt, &gi.UpdatedAt)
+	err = db.QueryRow(sqlstr, id).Scan(&gi.ID, &gi.FetchResultID, &gi.SalesPrice, &gi.CataloguePrice, &gi.DiscountRate, &gi.CreatedAt, &gi.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
