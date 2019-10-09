@@ -120,6 +120,10 @@ test/db/create:
 test/db/goose/%: install-tools
 	goose -dir ./db/migration mysql "$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/amamonitor_test?charset=utf8mb4&parseTime=true&loc=UTC" $*
 
+.PHONY: production/db/goose/%
+production/db/goose/%:
+	goose -dir ./db/migration mysql "$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/amamonitor?charset=utf8mb4&parseTime=true&loc=UTC" $*
+
 kill:
 	kill `cat $(PID)` 2> /dev/null || true
 
