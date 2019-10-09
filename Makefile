@@ -117,7 +117,7 @@ test/db/create:
 	mysql -uroot -proot -h$(MYSQL_HOST) -P$(MYSQL_PORT) < db/docker-entrypoint-initdb.d/create_database.sql
 
 .PHONY: test/db/goose/%
-test/db/goose/%: install-tools
+test/db/goose/%:
 	goose -dir ./db/migration mysql "$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/amamonitor_test?charset=utf8mb4&parseTime=true&loc=UTC" $*
 
 .PHONY: production/db/goose/%

@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"fmt"
+	"database/sql"
 	"os"
 	"testing"
 	"time"
@@ -43,20 +43,38 @@ func Test_Service_CreateFetchResultGiftItems(t *testing.T) {
 	}
 
 	dbURL := model.ReplaceToTestDBURL(t, config.DefaultVars.XODBURL())
-	fmt.Printf("dbURL = %v\n", dbURL)
 	db, err := dburl.Open(dbURL)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("dburl.Open failed: %v\n", err)
 	}
 	defer func() { _ = db.Close() }()
-	s := &Service{db: db}
+	s := New(db)
 
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			// TODO: model.Transaction
-			err := s.CreateFetchResultGiftItems(context.Background(), db, tt.args.giftItems, tt.args.createdAt)
+			ctx := context.Background()
+			var (
+				gotFetchResult *model.FetchResult
+				gotGiftItems   []*model.GiftItem
+			)
+			err := s.Transaction(ctx, nil, func(ctx context.Context, tx *sql.Tx) error {
+				var err error
+				gotFetchResult, gotGiftItems, err = s.CreateFetchResultGiftItems(
+					ctx, db, tt.args.giftItems, tt.args.createdAt,
+				)
+				if err != nil {
+					return err
+				}
+				return nil
+			})
 			if (err != nil) != tt.wantErr {
-				t.Errorf("CreateFetchResultGiftItems() error = %v, wantErr %v", err, tt.wantErr)
+				t.Fatalf("CreateFetchResultGiftItems() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if got, want := gotFetchResult.CreatedAt, tt.args.createdAt; got != want {
+				t.Errorf("unexpected createdAt: got=%v, want=%v", got, want)
+			}
+			if got, want := len(gotGiftItems), len(tt.args.giftItems); got != want {
+				t.Errorf("unexpected giftItems length: got=%v, want=%v", got, want)
 			}
 		})
 	}

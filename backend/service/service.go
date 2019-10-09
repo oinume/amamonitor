@@ -21,25 +21,46 @@ func New(db *sql.DB) *Service {
 	}
 }
 
+// Transaction is a shortcut of model.Transaction
+func (s *Service) Transaction(
+	ctx context.Context,
+	txOptions *sql.TxOptions,
+	f func(ctx context.Context, tx *sql.Tx) error,
+) error {
+	tx, err := s.db.BeginTx(ctx, txOptions)
+	if err != nil {
+		return err
+	}
+	if err := f(ctx, tx); err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *Service) CreateFetchResultGiftItems(
 	ctx context.Context,
 	db model.XODB,
 	giftItems []*fetcher.GiftItem,
 	createdAt time.Time,
-) error {
+) (*model.FetchResult, []*model.GiftItem, error) {
 	fetchResult := &model.FetchResult{
 		CreatedAt: createdAt,
 		UpdatedAt: createdAt,
 	}
 	if err := fetchResult.Insert(db); err != nil {
-		return err
+		return nil, nil, err
 	}
-	for _, gi := range giftItems {
+	items := make([]*model.GiftItem, len(giftItems))
+	for i, gi := range giftItems {
 		rate, err := strconv.ParseFloat(gi.DiscountRate, 10)
 		if err != nil {
-			return fmt.Errorf("failed to parse DiscountRate: %v", err)
+			return nil, nil, fmt.Errorf("failed to parse DiscountRate: %v", err)
 		}
-		giftItem := model.GiftItem{
+		giftItem := &model.GiftItem{
 			FetchResultID:  fetchResult.ID,
 			SalesPrice:     gi.SalesPrice,
 			CataloguePrice: gi.CatalogPrice,
@@ -48,8 +69,9 @@ func (s *Service) CreateFetchResultGiftItems(
 			UpdatedAt:      createdAt,
 		}
 		if err := giftItem.Insert(db); err != nil {
-			return err
+			return nil, nil, err
 		}
+		items[i] = giftItem
 	}
-	return nil
+	return fetchResult, items, nil
 }
