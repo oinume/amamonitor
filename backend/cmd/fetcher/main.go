@@ -8,9 +8,13 @@ import (
 	"net/http"
 	"os"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/oinume/amamonitor/backend/cli"
+	"github.com/oinume/amamonitor/backend/config"
 	"github.com/oinume/amamonitor/backend/fetcher"
 	"github.com/oinume/amamonitor/backend/http_server"
+	"github.com/oinume/amamonitor/backend/service"
+	"github.com/xo/dburl"
 )
 
 func main() {
@@ -41,14 +45,20 @@ func (m *fetcherMain) run(args []string) error {
 		return err
 	}
 
+	config.MustProcessDefault()
+
 	if *server {
-		port := os.Getenv("PORT")
-		if port == "" {
-			port = "5001"
+		db, err := dburl.Open(config.DefaultVars.XODBURL())
+		if err != nil {
+			return err
 		}
-		server := http_server.New()
-		fmt.Printf("Listening on port %v\n", port)
-		return http.ListenAndServe(fmt.Sprintf(":%s", port), server.NewRouter())
+		svc := service.New(db)
+		server := http_server.New(db, svc)
+		fmt.Printf("Listening on port %v\n", config.DefaultVars.HTTPPort)
+		return http.ListenAndServe(
+			fmt.Sprintf(":%d", config.DefaultVars.HTTPPort),
+			server.NewRouter(),
+		)
 	}
 
 	client, err := fetcher.NewClientFromURL("https://amaten.com")

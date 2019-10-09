@@ -1,18 +1,29 @@
 package http_server
 
 import (
+	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/oinume/amamonitor/backend/fetcher"
+	"github.com/oinume/amamonitor/backend/model"
+	"github.com/oinume/amamonitor/backend/service"
 )
 
-type server struct{}
+type server struct {
+	db      *sql.DB
+	service *service.Service
+}
 
-func New() *server {
-	return &server{}
+func New(db *sql.DB, svc *service.Service) *server {
+	return &server{
+		db:      db,
+		service: svc,
+	}
 }
 
 func (s *server) NewRouter() *mux.Router {
@@ -41,7 +52,16 @@ func (s *server) fetcher(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: Write gifts to DB
+	if err := model.Transaction(r.Context(), s.db, nil, func(ctx context.Context, tx *sql.Tx) error {
+		if err := s.service.CreateFetchResultGiftItems(r.Context(), tx, giftItems, time.Now()); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
+		internalServerError(w, err)
+		return
+	}
+
 	writeJSON(w, http.StatusOK, &giftItems)
 }
 

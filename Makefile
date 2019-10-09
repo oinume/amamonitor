@@ -70,7 +70,7 @@ goimports:
 	goimports -w ./server ./e2e
 
 .PHONY: lint
-lint: go/lint
+lint: install-lint go/lint
 
 .PHONY: go/lint
 go/lint:
@@ -97,12 +97,28 @@ gcloud/builds/%:
 
 .PHONY: db/goose/%
 db/goose/%:
-	goose mysql "$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/amamonitor?charset=utf8mb4&parseTime=true&loc=UTC" $*
+	goose -dir ./db/migration mysql "$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/amamonitor?charset=utf8mb4&parseTime=true&loc=UTC" $*
+	goose -dir ./db/migration mysql "$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT_XO))/amamonitor?charset=utf8mb4&parseTime=true&loc=UTC" $*
 
 .PHONY: db/reset
 db/reset:
 	mysql -h $(MYSQL_HOST) -P $(MYSQL_PORT) -uroot -proot -e "DROP DATABASE IF EXISTS amamonitor; DROP DATABASE IF EXISTS amamonitor_test"
 	mysql -h $(MYSQL_HOST) -P $(MYSQL_PORT) -uroot -proot < db/docker-entrypoint-initdb.d/create_database.sql
+
+.PHONY: db/xo
+db/xo:
+	rm -fr backend/model/*.xo.go
+	mkdir -p backend/model
+	xo --template-path=./db/templates "mysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@$(MYSQL_HOST):$(MYSQL_PORT_XO)/$(MYSQL_DATABASE)?charset=utf8mb4&parseTime=true&loc=UTC" -o backend/model
+	rm backend/model/goosedbversion.xo.go
+
+.PHONY: test/db/create
+test/db/create:
+	mysql -uroot -proot -h$(MYSQL_HOST) -P$(MYSQL_PORT) < db/docker-entrypoint-initdb.d/create_database.sql
+
+.PHONY: test/db/goose/%
+test/db/goose/%: install-tools
+	goose -dir ./db/migration mysql "$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/amamonitor_test?charset=utf8mb4&parseTime=true&loc=UTC" $*
 
 kill:
 	kill `cat $(PID)` 2> /dev/null || true

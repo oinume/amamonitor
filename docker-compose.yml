@@ -17,6 +17,23 @@ services:
 #      - ./volume/mysql/var/lib/mysql:/var/lib/mysql
 #      - ./log/mysql:/var/log/mysql
 
+  mysql57:
+    image: "mysql:5.7"
+    command: "--secure-file-priv=NULL --default-authentication-plugin=mysql_native_password"
+    restart: always
+    ports:
+      - "23307:3306"
+    environment:
+      MYSQL_DATABASE: "amamonitor"
+      MYSQL_USER: "amamonitor"
+      MYSQL_PASSWORD: "amamonitor"
+      MYSQL_ROOT_PASSWORD: "root"
+    volumes:
+      - "./db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d"
+      - "./volume/mysql/etc/mysql:/etc/mysql"
+#      - ./volume/mysql/var/lib/mysql:/var/lib/mysql
+#      - ./log/mysql:/var/log/mysql
+
 #  redis:
 #    image: "redis:3.2-alpine"
 #    ports:
