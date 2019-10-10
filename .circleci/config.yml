@@ -151,10 +151,16 @@ jobs:
             mysql -u${MYSQL_USER} -h ${MYSQL_HOST} < ./db/docker-entrypoint-initdb.d/create_database.sql
       - restore-cache-tools-go-mod
       - run:
+          name: "Install tools(goose)"
+          command: |
+            if [ ! -e "/go/bin/goose" ]; then
+              make install-tools
+            fi
+      - run:
           name: "Apply database migrations"
           command: |
             export MYSQL_USER=amamonitor
-            make install-tools test/db/goose/up
+            make test/db/goose/up
       - run:
           name: "Run go/test"
           command: |
