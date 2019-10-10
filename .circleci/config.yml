@@ -78,6 +78,7 @@ commands:
       - save_cache:
           key: << parameters.cache-key >>-tools-go-mod-{{ checksum "tools/go.sum" }}
           paths:
+            - /go/bin
             - /go/pkg/mod
   restore-cache-tools-go-mod:
     parameters:
