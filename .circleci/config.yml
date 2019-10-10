@@ -90,32 +90,6 @@ commands:
           keys:
             - << parameters.cache-key >>-tools-go-mod-{{ checksum "tools/go.sum" }}
 
-
-#commands:
-#  checkout-and-install-deps:
-#    parameters:
-#      key-prefix:
-#        type: string
-#        default: "v1"
-#    steps:
-#      - checkout
-#      - restore_cache:
-#          keys:
-#            - << parameters.key-prefix >>-go-{{ checksum "go.sum" }}
-#            - << parameters.key-prefix >>-go-tools-{{ checksum "tools/go.sum" }}
-#      - run: *gitconfig
-#      - run:
-#          name: "Install dependencies"
-#          command: go mod download
-#      - save_cache:
-#          key: << parameters.key-prefix >>-go-{{ checksum "go.sum" }}
-#          paths:
-#            - /go/bin
-#            - /go/pkg/mod
-#      - persist_to_workspace:
-#          root: .
-#          paths: "*"
-
 #node_modules_cache_key: &node_modules_cache_key
 #  key: node_modules-{{ checksum ".circleci/cache_version.txt" }}-{{ checksum "package.json" }}
 
@@ -152,25 +126,6 @@ jobs:
       <<: *env
     working_directory: /go/src/github.com/oinume/amamonitor
     executor: go-mysql
-#    docker:
-#      - image: golang:1.12-stretch
-#        environment:
-#          <<: *env
-#          AMAMONITOR_ENV: "test"
-#          ENABLE_TRACE: "false"
-#          GO111MODULE: "on"
-#          MYSQL_ALLOW_EMPTY_PASSWORD: true
-#          MYSQL_USER: "root"
-#          MYSQL_PASSWORD: "amamonitor"
-#          MYSQL_HOST: "127.0.0.1"
-#          MYSQL_PORT: "3306"
-#          MYSQL_DATABASE: "amamonitor_test"
-#          VERSION_HASH: "_version_"
-#          NODE_ENV: "test"
-#      - image: circleci/mysql:8.0
-#        environment:
-#          MYSQL_ALLOW_EMPTY_PASSWORD=true
-#        command: "--secure-file-priv=NULL --default-authentication-plugin=mysql_native_password"
     steps:
       - checkout-and-gitconfig
       - restore-cache-go-mod
