@@ -11,6 +11,7 @@ executors:
         environment:
           <<: *env
           GO111MODULE: "on"
+          GOPATH: "/go"
 
   go-mysql:
     docker:
@@ -20,6 +21,7 @@ executors:
           AMAMONITOR_ENV: "test"
           ENABLE_TRACE: "false"
           GO111MODULE: "on"
+          GOPATH: "/go"
           MYSQL_ALLOW_EMPTY_PASSWORD: true
           MYSQL_USER: "root"
           MYSQL_PASSWORD: "amamonitor"
