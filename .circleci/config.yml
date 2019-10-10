@@ -33,6 +33,47 @@ gitconfig: &gitconfig
     git config --global url."https://github.com".insteadOf git://github.com
     git config --global http.https://gopkg.in.followRedirects true
 
+commands:
+  save-cache-go-mod:
+    parameters:
+      cache-key:
+        type: string
+        default: "v1"
+    steps:
+      - save_cache:
+          key: << parameters.cache-key >>-go-mod-{{ checksum "go.sum" }}
+          paths:
+            - /go/pkg/mod
+  restore-cache-go-mod:
+    parameters:
+      cache-key:
+        type: string
+        default: "v1"
+    steps:
+      - restore_cache:
+          keys:
+            - << parameters.cache-key >>-go-mod-{{ checksum "go.sum" }}
+  save-cache-tools-go-mod:
+    parameters:
+      cache-key:
+        type: string
+        default: "v1"
+    steps:
+      - save_cache:
+          key: << parameters.cache-key >>-tools-go-mod-{{ checksum "tools/go.sum" }}
+          paths:
+            - /go/pkg/mod
+  restore-cache-tools-go-mod:
+    parameters:
+      cache-key:
+        type: string
+        default: "v1"
+    steps:
+      - restore_cache:
+          keys:
+            - << parameters.cache-key >>-tools-go-mod-{{ checksum "tools/go.sum" }}
+
+
 #commands:
 #  checkout-and-install-deps:
 #    parameters:
@@ -76,22 +117,20 @@ jobs:
     working_directory: /go/src/github.com/oinume/amamonitor
     executor: go-mysql
     steps:
-      - checkout-and-install-deps
+      - checkout
       - run:
           name: "Install golangci-lint"
           command: |
             if [ ! -e "/go/bin/golangci-lint" ]; then
               make install-lint
             fi
-#      - save_cache:
-#          key: go-linter-{{ checksum ".circleci/cache_version.txt" }}-{{ checksum "tools/go.sum" }}
-#          paths:
-#            - "/go/bin"
+      - restore-cache-tools-go-mod
       - run:
           name: "Run go/lint"
           command: make go/lint
+      - save-cache-tools-go-mod
 
-  backend:
+  backend-test:
     environment:
       <<: *env
     working_directory: /go/src/github.com/oinume/amamonitor
@@ -116,9 +155,11 @@ jobs:
         command: "--secure-file-priv=NULL --default-authentication-plugin=mysql_native_password"
     steps:
       - checkout
+      - restore-cache-go-mod
       - run:
           name: "Build"
           command: make build
+      - save-cache-go-mod
       - run:
           name: "Install mysql-client"
           command: |
@@ -135,6 +176,7 @@ jobs:
           command: |
             set -eu
             mysql -u${MYSQL_USER} -h ${MYSQL_HOST} < ./db/docker-entrypoint-initdb.d/create_database.sql
+      - restore-cache-tools-go-mod
       - run:
           name: "Apply database migrations"
           command: |
@@ -145,6 +187,8 @@ jobs:
           command: |
             export MYSQL_USER=amamonitor
             make go/test GO_TEST="go test -v -race -coverprofile=coverage.txt -covermode=atomic"
+      - save-cache-go-mod
+      - save-cache-tools-go-mod
       - run:
           name: "Upload to codecov"
           command: |
@@ -204,13 +248,18 @@ workflows:
   version: 2
   build-workflow:
     jobs:
-      - backend:
+      - backend-lint:
+          filters:
+            branches:
+              only: /.*/
+      - backend-test:
           filters:
             branches:
               only: /.*/
       - deploy-backend:
           requires:
-            - backend
+            - backend-lint
+            - backend-test
           filters:
             branches:
               only:
