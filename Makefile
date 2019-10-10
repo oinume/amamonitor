@@ -19,19 +19,14 @@ all: build
 setup: install-lint install-tools
 
 .PHONY: install-tools
-install-tools:
+install-tools: install-linter
 	cd tools && go install \
 		github.com/xo/xo \
 		github.com/pressly/goose/cmd/goose
-#	GO111MODULE=off $(GO_GET) bitbucket.org/liamstask/goose/cmd/goose
 
-.PHONY: install-lint
-install-lint:
+.PHONY: install-linter
+install-linter:
 	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(GOPATH)/bin v1.17.1
-
-.PHONY: install
-install:
-	go install github.com/oinume/lekcije/server/cmd/lekcije
 
 .PHONY: git-config
 git-config:
