@@ -56,7 +56,7 @@ commands:
     parameters:
       cache-key:
         type: string
-        default: "v3"
+        default: "v4"
     steps:
       - save_cache:
           key: << parameters.cache-key >>-go-mod-{{ checksum "go.sum" }}
@@ -66,7 +66,7 @@ commands:
     parameters:
       cache-key:
         type: string
-        default: "v3"
+        default: "v4"
     steps:
       - restore_cache:
           keys:
@@ -75,7 +75,7 @@ commands:
     parameters:
       cache-key:
         type: string
-        default: "v3"
+        default: "v4"
     steps:
       - save_cache:
           key: << parameters.cache-key >>-tools-go-mod-{{ checksum "tools/go.sum" }}
@@ -86,7 +86,7 @@ commands:
     parameters:
       cache-key:
         type: string
-        default: "v3"
+        default: "v4"
     steps:
       - restore_cache:
           keys:
@@ -121,7 +121,6 @@ jobs:
       - run:
           name: "Run go/lint"
           command: make go/lint
-      - save-cache-tools-go-mod
 
   backend-test:
     environment:
@@ -153,8 +152,9 @@ jobs:
             mysql -u${MYSQL_USER} -h ${MYSQL_HOST} < ./db/docker-entrypoint-initdb.d/create_database.sql
       - restore-cache-tools-go-mod
       - run:
-          name: "Install tools(goose)"
+          name: "Install tools"
           command: |
+            ls -l /go/bin/
             if [ ! -e "/go/bin/goose" ]; then
               make install-tools
             fi
