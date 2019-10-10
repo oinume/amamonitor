@@ -1,8 +1,30 @@
-version: 2
+version: 2.1
 
 env: &env
   GOOGLE_CLOUD_SDK_VERSION: 258.0.0
   GOOGLE_CLOUD_SDK_DOWNLOAD_PATH: /google-cloud-sdk
+
+executors:
+  go-mysql:
+    docker:
+      - image: golang:1.12-stretch
+        environment:
+          <<: *env
+          AMAMONITOR_ENV: "test"
+          ENABLE_TRACE: "false"
+          GO111MODULE: "on"
+          MYSQL_ALLOW_EMPTY_PASSWORD: true
+          MYSQL_USER: "root"
+          MYSQL_PASSWORD: "amamonitor"
+          MYSQL_HOST: "127.0.0.1"
+          MYSQL_PORT: "3306"
+          MYSQL_DATABASE: "amamonitor_test"
+          VERSION_HASH: "_version_"
+          NODE_ENV: "test"
+      - image: circleci/mysql:8.0
+        environment:
+          MYSQL_ALLOW_EMPTY_PASSWORD=true
+        command: "--secure-file-priv=NULL --default-authentication-plugin=mysql_native_password"
 
 gitconfig: &gitconfig
   name: "Set .gitconfig"
@@ -10,6 +32,37 @@ gitconfig: &gitconfig
     echo "" > ~/.gitconfig
     git config --global url."https://github.com".insteadOf git://github.com
     git config --global http.https://gopkg.in.followRedirects true
+
+commands:
+  checkout-and-install-deps:
+    parameters:
+      key-prefix:
+        type: string
+        default: "v1"
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - << parameters.key-prefix >>-go-{{ checksum "go.sum" }}
+#            - << parameters.key-prefix >>-go-tools-{{ checksum "tools/go.sum" }}
+      - run: *gitconfig
+      - run:
+          name: "Install dependencies"
+          command: go mod download
+#      - run:
+#          name: "Install golangci-lint"
+#          command: |
+#            if [ ! -e "/go/bin/golangci-lint" ]; then
+#              make install-lint
+#            fi
+      - save_cache:
+          key: << parameters.key-prefix >>-go-{{ checksum "go.sum" }}
+          paths:
+            - /go/bin
+            - /go/pkg/mod
+#      - persist_to_workspace:
+#          root: .
+#          paths: "*"
 
 #node_modules_cache_key: &node_modules_cache_key
 #  key: node_modules-{{ checksum ".circleci/cache_version.txt" }}-{{ checksum "package.json" }}
@@ -23,6 +76,27 @@ gitconfig: &gitconfig
 #    fi
 
 jobs:
+  backend-lint:
+    environment:
+      <<: *env
+    working_directory: /go/src/github.com/oinume/amamonitor
+    executor: go-mysql
+    steps:
+      - checkout-and-install-deps
+      - run:
+          name: "Install golangci-lint"
+          command: |
+            if [ ! -e "/go/bin/golangci-lint" ]; then
+              make install-lint
+            fi
+#      - save_cache:
+#          key: go-commands-{{ checksum ".circleci/cache_version.txt" }}-{{ checksum "go.sum" }}
+#          paths:
+#            - "/go/bin"
+      - run:
+          name: "Run go/lint"
+          command: make go/lint
+
   backend:
     environment:
       <<: *env
@@ -47,11 +121,12 @@ jobs:
           MYSQL_ALLOW_EMPTY_PASSWORD=true
         command: "--secure-file-priv=NULL --default-authentication-plugin=mysql_native_password"
     steps:
-      - checkout
+      - checkout-and-install-deps
       - run:
-          <<: *gitconfig
+          name: "Build"
+          command: make build
       - run:
-          name: "Install packages"
+          name: "Install mysql-client"
           command: |
             set -eu
             apt-get update -qq
@@ -66,30 +141,6 @@ jobs:
           command: |
             set -eu
             mysql -u${MYSQL_USER} -h ${MYSQL_HOST} < ./db/docker-entrypoint-initdb.d/create_database.sql
-      - restore_cache:
-          key: go-mod-{{ checksum ".circleci/cache_version.txt" }}-{{ checksum "go.sum" }}
-      - save_cache:
-          key: go-mod-{{ checksum ".circleci/cache_version.txt" }}-{{ checksum "go.sum" }}
-          paths:
-            - "/go/pkg/mod/cache"
-      - restore_cache:
-          key: go-commands-{{ checksum ".circleci/cache_version.txt" }}-{{ checksum "go.sum" }}
-      - run:
-          name: "Install lint"
-          command: |
-            if [ ! -e "/go/bin/golangci-lint" ]; then
-              make install-lint
-            fi
-      - save_cache:
-          key: go-commands-{{ checksum ".circleci/cache_version.txt" }}-{{ checksum "go.sum" }}
-          paths:
-            - "/go/bin"
-      - run:
-          name: "Run go/lint"
-          command: make go/lint
-      - run:
-          name: "Build"
-          command: make build
       - run:
           name: "Apply database migrations"
           command: |
