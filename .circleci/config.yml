@@ -33,33 +33,27 @@ gitconfig: &gitconfig
     git config --global url."https://github.com".insteadOf git://github.com
     git config --global http.https://gopkg.in.followRedirects true
 
-commands:
-  checkout-and-install-deps:
-    parameters:
-      key-prefix:
-        type: string
-        default: "v1"
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - << parameters.key-prefix >>-go-{{ checksum "go.sum" }}
+#commands:
+#  checkout-and-install-deps:
+#    parameters:
+#      key-prefix:
+#        type: string
+#        default: "v1"
+#    steps:
+#      - checkout
+#      - restore_cache:
+#          keys:
+#            - << parameters.key-prefix >>-go-{{ checksum "go.sum" }}
 #            - << parameters.key-prefix >>-go-tools-{{ checksum "tools/go.sum" }}
-      - run: *gitconfig
-      - run:
-          name: "Install dependencies"
-          command: go mod download
+#      - run: *gitconfig
 #      - run:
-#          name: "Install golangci-lint"
-#          command: |
-#            if [ ! -e "/go/bin/golangci-lint" ]; then
-#              make install-lint
-#            fi
-      - save_cache:
-          key: << parameters.key-prefix >>-go-{{ checksum "go.sum" }}
-          paths:
-            - /go/bin
-            - /go/pkg/mod
+#          name: "Install dependencies"
+#          command: go mod download
+#      - save_cache:
+#          key: << parameters.key-prefix >>-go-{{ checksum "go.sum" }}
+#          paths:
+#            - /go/bin
+#            - /go/pkg/mod
 #      - persist_to_workspace:
 #          root: .
 #          paths: "*"
@@ -90,7 +84,7 @@ jobs:
               make install-lint
             fi
 #      - save_cache:
-#          key: go-commands-{{ checksum ".circleci/cache_version.txt" }}-{{ checksum "go.sum" }}
+#          key: go-linter-{{ checksum ".circleci/cache_version.txt" }}-{{ checksum "tools/go.sum" }}
 #          paths:
 #            - "/go/bin"
       - run:
@@ -121,7 +115,7 @@ jobs:
           MYSQL_ALLOW_EMPTY_PASSWORD=true
         command: "--secure-file-priv=NULL --default-authentication-plugin=mysql_native_password"
     steps:
-      - checkout-and-install-deps
+      - checkout
       - run:
           name: "Build"
           command: make build
