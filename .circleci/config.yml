@@ -54,7 +54,7 @@ commands:
     parameters:
       cache-key:
         type: string
-        default: "v2"
+        default: "v3"
     steps:
       - save_cache:
           key: << parameters.cache-key >>-go-mod-{{ checksum "go.sum" }}
@@ -64,7 +64,7 @@ commands:
     parameters:
       cache-key:
         type: string
-        default: "v2"
+        default: "v3"
     steps:
       - restore_cache:
           keys:
@@ -73,7 +73,7 @@ commands:
     parameters:
       cache-key:
         type: string
-        default: "v2"
+        default: "v3"
     steps:
       - save_cache:
           key: << parameters.cache-key >>-tools-go-mod-{{ checksum "tools/go.sum" }}
@@ -84,7 +84,7 @@ commands:
     parameters:
       cache-key:
         type: string
-        default: "v2"
+        default: "v3"
     steps:
       - restore_cache:
           keys:
