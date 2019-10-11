@@ -51,6 +51,7 @@ linters:
     - scopelint
     - golint
     - bodyclose
+    - funlen
 
 run:
   skip-dirs:
