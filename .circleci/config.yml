@@ -7,7 +7,7 @@ env: &env
 executors:
   go-linter:
     docker:
-      - image: golang:1.12-stretch
+      - image: golang:1.13-buster
         environment:
           <<: *env
           GO111MODULE: "on"
@@ -15,7 +15,7 @@ executors:
 
   go-mysql:
     docker:
-      - image: golang:1.12-stretch
+      - image: golang:1.13-buster
         environment:
           <<: *env
           AMAMONITOR_ENV: "test"
@@ -140,7 +140,7 @@ jobs:
           command: |
             set -eu
             apt-get update -qq
-            apt-get install -y mysql-client net-tools
+            apt-get install -y default-mysql-client net-tools
       - run:
           name: "Wait MySQL is up"
           command: |

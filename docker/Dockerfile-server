@@ -1,4 +1,4 @@
-FROM golang:1.12-buster AS builder
+FROM golang:1.13-buster AS builder
 
 RUN set -eux \
 	&& apt-get install -y \
