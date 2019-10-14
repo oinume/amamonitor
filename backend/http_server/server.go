@@ -28,7 +28,7 @@ func New(db *sql.DB, svc *service.Service) *server {
 
 func (s *server) NewRouter() *mux.Router {
 	r := mux.NewRouter()
-	r.HandleFunc("/fetcher/{type}", s.fetcher).Methods("GET")
+	r.HandleFunc("/fetcher/{provider}", s.fetcher).Methods("GET")
 	return r
 }
 
