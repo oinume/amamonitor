@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/oinume/amamonitor/backend/model"
 )
 
 type Type string
@@ -18,8 +20,24 @@ const (
 	UserAgent          = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
 )
 
-func NewGiftItem(discountRate string, catalogPrice, salesPrice uint) *GiftItem {
+func (t Type) ProviderValue() model.Provider {
+	switch t {
+	case amatenType:
+		return model.ProviderAmaten
+	case giftissueType:
+		return model.ProviderAmaten // TODO
+	}
+	return model.Provider(0)
+}
+
+func NewGiftItem(
+	providerType Type,
+	discountRate string,
+	catalogPrice,
+	salesPrice uint,
+) *GiftItem {
 	return &GiftItem{
+		Provider:     providerType.ProviderValue(),
 		DiscountRate: discountRate,
 		CatalogPrice: catalogPrice,
 		SalesPrice:   salesPrice,
@@ -27,9 +45,10 @@ func NewGiftItem(discountRate string, catalogPrice, salesPrice uint) *GiftItem {
 }
 
 type GiftItem struct {
-	DiscountRate string `json:"discountRate"`
-	CatalogPrice uint   `json:"catalogPrice"`
-	SalesPrice   uint   `json:"salesPrice"`
+	Provider     model.Provider `json:"provider"`
+	DiscountRate string         `json:"discountRate"`
+	CatalogPrice uint           `json:"catalogPrice"`
+	SalesPrice   uint           `json:"salesPrice"`
 }
 
 type FetchOptions struct {
