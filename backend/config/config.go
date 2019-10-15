@@ -26,7 +26,7 @@ type Vars struct {
 	HTTPPort int `envconfig:"PORT" default:"5001"`
 	//GRPCPort                  int    `envconfig:"GRPC_PORT" default:"4002"`
 	//RollbarAccessToken        string `envconfig:"ROLLBAR_ACCESS_TOKEN"`
-	//VersionHash               string `envconfig:"VERSION_HASH"`
+	VersionHash string `envconfig:"VERSION_HASH"`
 	//DebugSQL                  bool   `envconfig:"DEBUG_SQL"`
 	//ZipkinReporterURL         string `envconfig:"ZIPKIN_REPORTER_URL"`
 	//LocalLocation             *time.Location
@@ -62,6 +62,14 @@ func MustProcessDefault() {
 	})
 }
 
+func (v *Vars) IsProductionEnv() bool {
+	return v.ServiceEnv == "production"
+}
+
+func (v *Vars) IsDevelopmentEnv() bool {
+	return v.ServiceEnv == "development"
+}
+
 func (v *Vars) DBURL() string {
 	return fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s",
@@ -75,4 +83,24 @@ func (v *Vars) XODBURL() string {
 		"mysql://%s:%s@%s:%s/%s?charset=utf8mb4&parseTime=true&loc=UTC",
 		v.MySQLUser, v.MySQLPassword, v.MySQLHost, v.MySQLPort, v.MySQLDatabase,
 	)
+}
+
+func (v *Vars) StaticURL() string {
+	if v.IsProductionEnv() {
+		return "https://asset.amamonitor.com/static/" + v.VersionHash
+	} else if v.IsDevelopmentEnv() {
+		return "http://asset.local.amamonitor.com/static/" + v.VersionHash
+	} else {
+		return "/static/" + v.VersionHash
+	}
+}
+
+func (v *Vars) WebURL() string {
+	if v.IsProductionEnv() {
+		return "https://www.lekcije.com"
+	} else if v.IsDevelopmentEnv() {
+		return "http://www.local.lekcije.com"
+	} else {
+		return "http://localhost:5000"
+	}
 }
