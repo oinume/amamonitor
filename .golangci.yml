@@ -45,6 +45,8 @@ linters-settings:
 linters:
   enable-all: true
   disable:
+    - goconst
+    - gocritic
     - maligned
     - prealloc
     - gochecknoglobals
@@ -52,6 +54,7 @@ linters:
     - golint
     - bodyclose
     - funlen
+    - unparam
 
 run:
   skip-dirs:
