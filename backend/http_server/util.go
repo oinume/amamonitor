@@ -56,10 +56,10 @@ func IsUserAgentTablet(req *http.Request) bool {
 }
 
 func (s *server) getCommonTemplateData(req *http.Request, loggedIn bool, userID uint32) commonTemplateData {
-	canonicalURL := fmt.Sprintf("%s://%s%s", config.WebURLScheme(req), req.Host, req.RequestURI)
+	canonicalURL := fmt.Sprintf("%s://%s%s", config.DefaultVars.WebURLScheme(req), req.Host, req.RequestURI)
 	canonicalURL = (strings.SplitN(canonicalURL, "?", 2))[0] // TODO: use url.Parse
 	data := commonTemplateData{
-		StaticURL: config.StaticURL(),
+		StaticURL: config.DefaultVars.StaticURL(),
 		//		GoogleAnalyticsID: config.DefaultVars.GoogleAnalyticsID,
 		CurrentURL:        req.RequestURI,
 		CanonicalURL:      canonicalURL,

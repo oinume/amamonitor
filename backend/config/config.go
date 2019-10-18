@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"net/http"
 	"sync"
 
 	"github.com/kelseyhightower/envconfig"
@@ -104,3 +105,17 @@ func (v *Vars) WebURL() string {
 		return "http://localhost:5000"
 	}
 }
+
+func (v *Vars) WebURLScheme(r *http.Request) string {
+	if v.IsProductionEnv() {
+		return "https"
+	}
+	if r != nil && r.Header.Get("X-Forwarded-Proto") == "https" {
+		return "https"
+	}
+	return "http"
+}
+
+//func WebURLScheme(r *http.Request) string {
+//	return DefaultVars.WebURLScheme(r)
+//}
