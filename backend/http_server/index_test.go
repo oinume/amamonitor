@@ -15,7 +15,6 @@ func Test_server_index(t *testing.T) {
 	tests := map[string]struct {
 		method         string
 		path           string
-		query          map[string]string
 		handler        http.HandlerFunc
 		wantStatusCode int
 	}{

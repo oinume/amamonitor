@@ -42,7 +42,7 @@ func Test_Service_CreateFetchResultGiftItems(t *testing.T) {
 		},
 	}
 
-	dbURL := model.ReplaceToTestDBURL(t, config.DefaultVars.XODBURL())
+	dbURL := model.ReplaceToTestDBURL(config.DefaultVars.XODBURL())
 	db, err := dburl.Open(dbURL)
 	if err != nil {
 		t.Fatalf("dburl.Open failed: %v\n", err)
