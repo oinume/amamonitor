@@ -85,10 +85,10 @@ func (s *server) getCommonTemplateData(req *http.Request, loggedIn bool, userID 
 	return data
 }
 
-func getRemoteAddress(req *http.Request) string {
-	xForwardedFor := req.Header.Get("X-Forwarded-For")
-	if xForwardedFor == "" {
-		return (strings.Split(req.RemoteAddr, ":"))[0]
-	}
-	return strings.TrimSpace((strings.Split(xForwardedFor, ","))[0])
-}
+//func getRemoteAddress(req *http.Request) string {
+//	xForwardedFor := req.Header.Get("X-Forwarded-For")
+//	if xForwardedFor == "" {
+//		return (strings.Split(req.RemoteAddr, ":"))[0]
+//	}
+//	return strings.TrimSpace((strings.Split(xForwardedFor, ","))[0])
+//}
