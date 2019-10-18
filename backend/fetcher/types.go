@@ -15,16 +15,16 @@ import (
 type Provider string
 
 const (
-	amatenProvider    Provider = "amaten.com"
-	giftissueProvider Provider = "giftissue.com"
+	AmatenProvider    Provider = "amaten.com"
+	GiftissueProvider Provider = "giftissue.com"
 	UserAgent                  = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
 )
 
 func (p Provider) ModelValue() model.Provider {
 	switch p {
-	case amatenProvider:
+	case AmatenProvider:
 		return model.ProviderAmaten
-	case giftissueProvider:
+	case GiftissueProvider:
 		return model.ProviderAmaten // TODO
 	}
 	return model.Provider(0)
@@ -61,9 +61,9 @@ type Client interface {
 
 func NewClientFromProvider(p Provider) (Client, error) {
 	switch p {
-	case amatenProvider:
+	case AmatenProvider:
 		return NewAmatenClient()
-	case giftissueProvider:
+	case GiftissueProvider:
 		return NewGiftissueClient()
 	}
 	return nil, fmt.Errorf("failed to new client (unknown url)")

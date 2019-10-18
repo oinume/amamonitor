@@ -48,8 +48,8 @@ func Test_AmatenClient_Fetch(t *testing.T) {
 	}
 
 	want := []*GiftItem{
-		NewGiftItem(amatenProvider, "87.1", 10000, 8710),
-		NewGiftItem(amatenProvider, "90.0", 1000, 900),
+		NewGiftItem(AmatenProvider, "87.1", 10000, 8710),
+		NewGiftItem(AmatenProvider, "90.0", 1000, 900),
 	}
 	if len(giftItems) != len(want) {
 		t.Fatalf("unexpected giftItems length")
