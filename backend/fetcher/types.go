@@ -8,18 +8,36 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/oinume/amamonitor/backend/model"
 )
 
-type Type string
+type Provider string
 
 const (
-	amatenType    Type = "amaten.com"
-	giftissueType Type = "giftissue.com"
-	UserAgent          = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
+	AmatenProvider    Provider = "amaten.com"
+	GiftissueProvider Provider = "giftissue.com"
+	UserAgent                  = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
 )
 
-func NewGiftItem(discountRate string, catalogPrice, salesPrice uint) *GiftItem {
+func (p Provider) ModelValue() model.Provider {
+	switch p {
+	case AmatenProvider:
+		return model.ProviderAmaten
+	case GiftissueProvider:
+		return model.ProviderAmaten // TODO
+	}
+	return model.Provider(0)
+}
+
+func NewGiftItem(
+	provider Provider,
+	discountRate string,
+	catalogPrice,
+	salesPrice uint,
+) *GiftItem {
 	return &GiftItem{
+		Provider:     provider.ModelValue(),
 		DiscountRate: discountRate,
 		CatalogPrice: catalogPrice,
 		SalesPrice:   salesPrice,
@@ -27,9 +45,10 @@ func NewGiftItem(discountRate string, catalogPrice, salesPrice uint) *GiftItem {
 }
 
 type GiftItem struct {
-	DiscountRate string `json:"discountRate"`
-	CatalogPrice uint   `json:"catalogPrice"`
-	SalesPrice   uint   `json:"salesPrice"`
+	Provider     model.Provider `json:"provider"`
+	DiscountRate string         `json:"discountRate"`
+	CatalogPrice uint           `json:"catalogPrice"`
+	SalesPrice   uint           `json:"salesPrice"`
 }
 
 type FetchOptions struct {
@@ -40,11 +59,11 @@ type Client interface {
 	Fetch(ctx context.Context, options *FetchOptions) ([]*GiftItem, error)
 }
 
-func NewClientFromType(t Type) (Client, error) {
-	switch t {
-	case amatenType:
+func NewClientFromProvider(p Provider) (Client, error) {
+	switch p {
+	case AmatenProvider:
 		return NewAmatenClient()
-	case giftissueType:
+	case GiftissueProvider:
 		return NewGiftissueClient()
 	}
 	return nil, fmt.Errorf("failed to new client (unknown url)")
@@ -55,7 +74,7 @@ func NewClientFromURL(urlStr string) (Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewClientFromType(Type(u.Host))
+	return NewClientFromProvider(Provider(u.Host))
 }
 
 var redirectErrorFunc = func(req *http.Request, via []*http.Request) error {

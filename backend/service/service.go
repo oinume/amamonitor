@@ -62,6 +62,7 @@ func (s *Service) CreateFetchResultGiftItems(
 		}
 		giftItem := &model.GiftItem{
 			FetchResultID:  fetchResult.ID,
+			Provider:       gi.Provider,
 			SalesPrice:     gi.SalesPrice,
 			CataloguePrice: gi.CatalogPrice,
 			DiscountRate:   rate,

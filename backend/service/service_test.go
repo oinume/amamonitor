@@ -33,8 +33,8 @@ func Test_Service_CreateFetchResultGiftItems(t *testing.T) {
 		"normal": {
 			args: args{
 				giftItems: []*fetcher.GiftItem{
-					{DiscountRate: "93.0", CatalogPrice: 1000, SalesPrice: 930},
-					{DiscountRate: "89.5", CatalogPrice: 7390, SalesPrice: 6621},
+					fetcher.NewGiftItem(fetcher.AmatenProvider, "93.0", 1000, 930),
+					fetcher.NewGiftItem(fetcher.AmatenProvider, "89.5", 7390, 6621),
 				},
 				createdAt: createdAt,
 			},
