@@ -1,6 +1,7 @@
 package http_server
 
 import (
+	"database/sql"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -15,8 +16,16 @@ import (
 	"github.com/xo/dburl"
 )
 
+var realDB *sql.DB
+
 func TestMain(m *testing.M) {
 	config.MustProcessDefault()
+	dbURL := model.ReplaceToTestDBURL(config.DefaultVars.XODBURL())
+	db, err := dburl.Open(dbURL)
+	if err != nil {
+		panic(err)
+	}
+	realDB = db
 	os.Exit(m.Run())
 }
 
@@ -39,11 +48,7 @@ func Test_server_fetcher(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(fakeHandler))
 	defer ts.Close()
 
-	dbURL := model.ReplaceToTestDBURL(t, config.DefaultVars.XODBURL())
-	db, err := dburl.Open(dbURL)
-	if err != nil {
-		t.Fatal(err)
-	}
+	db := getRealDB()
 	server := New(db, service.New(db) /* TODO: mock */)
 	tests := map[string]struct {
 		method         string
@@ -92,4 +97,8 @@ func Test_server_fetcher(t *testing.T) {
 			}
 		})
 	}
+}
+
+func getRealDB() *sql.DB {
+	return realDB
 }
