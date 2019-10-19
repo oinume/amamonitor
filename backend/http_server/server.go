@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
 	"time"
 
@@ -29,6 +30,7 @@ func New(db *sql.DB, svc *service.Service) *server {
 func (s *server) NewRouter() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/fetcher/{provider}", s.fetcher).Methods("GET")
+	r.HandleFunc("/", s.index).Methods("GET")
 	return r
 }
 
@@ -120,6 +122,26 @@ func writeJSON(w http.ResponseWriter, code int, body interface{}) {
 	w.WriteHeader(code)
 	if err := json.NewEncoder(w).Encode(body); err != nil {
 		http.Error(w, `{ "status": "Failed to Encode as writeJSON" }`, http.StatusInternalServerError)
-		return
+	}
+}
+
+//func writeHTML(w http.ResponseWriter, code int, body string) {
+//	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+//	w.WriteHeader(code)
+//	if _, err := fmt.Fprint(w, body); err != nil {
+//		http.Error(w, "Failed to write HTML", http.StatusInternalServerError)
+//	}
+//}
+
+func writeHTMLWithTemplate(
+	w http.ResponseWriter,
+	code int,
+	t *template.Template,
+	data interface{},
+) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(code)
+	if err := t.Execute(w, data); err != nil {
+		internalServerError(w, err)
 	}
 }

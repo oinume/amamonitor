@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"net/http"
 	"sync"
 
 	"github.com/kelseyhightower/envconfig"
@@ -26,11 +27,14 @@ type Vars struct {
 	HTTPPort int `envconfig:"PORT" default:"5001"`
 	//GRPCPort                  int    `envconfig:"GRPC_PORT" default:"4002"`
 	//RollbarAccessToken        string `envconfig:"ROLLBAR_ACCESS_TOKEN"`
-	//VersionHash               string `envconfig:"VERSION_HASH"`
+	VersionHash string `envconfig:"VERSION_HASH"`
 	//DebugSQL                  bool   `envconfig:"DEBUG_SQL"`
 	//ZipkinReporterURL         string `envconfig:"ZIPKIN_REPORTER_URL"`
 	//LocalLocation             *time.Location
+	templateDir string // Configurable for unit test
 }
+
+const DefaultTemplateDir = "frontend/html"
 
 func Process() (*Vars, error) {
 	var vars Vars
@@ -42,6 +46,8 @@ func Process() (*Vars, error) {
 	//if vars.VersionHash == "" {
 	//	vars.VersionHash = timestamp.Format("20060102150405")
 	//}
+
+	vars.SetTemplateDir(DefaultTemplateDir)
 	return &vars, nil
 }
 
@@ -62,6 +68,14 @@ func MustProcessDefault() {
 	})
 }
 
+func (v *Vars) IsProductionEnv() bool {
+	return v.ServiceEnv == "production"
+}
+
+func (v *Vars) IsDevelopmentEnv() bool {
+	return v.ServiceEnv == "development"
+}
+
 func (v *Vars) DBURL() string {
 	return fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s",
@@ -76,3 +90,48 @@ func (v *Vars) XODBURL() string {
 		v.MySQLUser, v.MySQLPassword, v.MySQLHost, v.MySQLPort, v.MySQLDatabase,
 	)
 }
+
+func (v *Vars) StaticURL() string {
+	if v.IsProductionEnv() {
+		return "https://asset.amamonitor.com/static/" + v.VersionHash
+	} else if v.IsDevelopmentEnv() {
+		return "http://asset.local.amamonitor.com/static/" + v.VersionHash
+	} else {
+		return "/static/" + v.VersionHash
+	}
+}
+
+func (v *Vars) WebURL() string {
+	if v.IsProductionEnv() {
+		return "https://www.lekcije.com"
+	} else if v.IsDevelopmentEnv() {
+		return "http://www.local.lekcije.com"
+	} else {
+		return "http://localhost:5000"
+	}
+}
+
+func (v *Vars) WebURLScheme(r *http.Request) string {
+	if v.IsProductionEnv() {
+		return "https"
+	}
+	if r != nil && r.Header.Get("X-Forwarded-Proto") == "https" {
+		return "https"
+	}
+	return "http"
+}
+
+func (v *Vars) SetTemplateDir(dir string) {
+	v.templateDir = dir
+}
+
+func (v *Vars) TemplateDir() string {
+	if v.templateDir == "" {
+		return DefaultTemplateDir
+	}
+	return v.templateDir
+}
+
+//func WebURLScheme(r *http.Request) string {
+//	return DefaultVars.WebURLScheme(r)
+//}
