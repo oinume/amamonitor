@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"testing"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -20,6 +21,7 @@ var realDB *sql.DB
 
 func TestMain(m *testing.M) {
 	config.MustProcessDefault()
+	config.DefaultVars.SetTemplateDir(filepath.Join("..", "..", config.DefaultTemplateDir))
 	dbURL := model.ReplaceToTestDBURL(config.DefaultVars.XODBURL())
 	db, err := dburl.Open(dbURL)
 	if err != nil {

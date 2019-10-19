@@ -31,7 +31,10 @@ type Vars struct {
 	//DebugSQL                  bool   `envconfig:"DEBUG_SQL"`
 	//ZipkinReporterURL         string `envconfig:"ZIPKIN_REPORTER_URL"`
 	//LocalLocation             *time.Location
+	templateDir string // Configurable for unit test
 }
+
+const DefaultTemplateDir = "frontend/html"
 
 func Process() (*Vars, error) {
 	var vars Vars
@@ -43,6 +46,8 @@ func Process() (*Vars, error) {
 	//if vars.VersionHash == "" {
 	//	vars.VersionHash = timestamp.Format("20060102150405")
 	//}
+
+	vars.SetTemplateDir(DefaultTemplateDir)
 	return &vars, nil
 }
 
@@ -114,6 +119,17 @@ func (v *Vars) WebURLScheme(r *http.Request) string {
 		return "https"
 	}
 	return "http"
+}
+
+func (v *Vars) SetTemplateDir(dir string) {
+	v.templateDir = dir
+}
+
+func (v *Vars) TemplateDir() string {
+	if v.templateDir == "" {
+		return DefaultTemplateDir
+	}
+	return v.templateDir
 }
 
 //func WebURLScheme(r *http.Request) string {

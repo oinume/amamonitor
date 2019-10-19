@@ -23,19 +23,13 @@ type commonTemplateData struct {
 	//	NavigationItems   []navigationItem
 }
 
-func TemplateDir() string {
-	// TODO: configurable
-	return "frontend/html"
-}
-
 func TemplatePath(file string) string {
-	return path.Join(TemplateDir(), file)
+	return path.Join(config.DefaultVars.TemplateDir(), file)
 }
 
 func ParseHTMLTemplates(files ...string) *template.Template {
 	f := []string{
 		TemplatePath("_base.html"),
-		TemplatePath("_flashMessage.html"),
 	}
 	f = append(f, files...)
 	return template.Must(template.ParseFiles(f...))
