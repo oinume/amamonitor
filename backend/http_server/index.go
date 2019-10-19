@@ -12,13 +12,5 @@ func (s *server) index(w http.ResponseWriter, r *http.Request) {
 	data := &Data{
 		commonTemplateData: s.getCommonTemplateData(r, false, 0),
 	}
-
-	if err := t.Execute(w, data); err != nil {
-		internalServerError(w, err)
-		//internalServerError(s.appLogger, w, errors.NewInternalError(
-		//	errors.WithError(err),
-		//	errors.WithMessage("Failed to template.Execute()"),
-		//), 0)
-		return
-	}
+	writeHTMLWithTemplate(w, http.StatusOK, t, data)
 }
