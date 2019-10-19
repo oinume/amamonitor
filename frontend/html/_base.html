@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>{{ block "title" . }}Amamonitor - TODO{{ end }}</title>
-  <meta name="description" content="Amamonitorは、登録したDMM英会話の講師のレッスンに空きができた時にメールでお知らせするサービスです。" />
+  <meta name="description" content="AmamonitorはAmazonギフト券をオトクに手に入れるためのサービスです。" />
   <meta name="keywords" content="amamonitor,アマモニター,Amazonギフト券,アマゾンギフト券" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0, maximum-scale=1, minimum-scale=1" />
   <link rel="canonical" href="{{ .CanonicalURL }}" />
@@ -20,18 +20,18 @@
   <meta property="fb:app_id" content="552348908286128" />
   <meta property="og:url" content="{{ .CanonicalURL }}" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="{{ block "ogTitle" . }}lekcije - DMM英会話のお気に入り講師をフォローしよう{{ end }}">
+  <meta property="og:title" content="{{ block "ogTitle" . }}Amamonitor - Amazonギフト券をオトクに手に入れよう{{ end }}">
   <meta property="og:image" content="{{ .StaticURL }}/image/logoLarge.png">
-  <meta property="og:description" content="lekcije(レクシエ)は、登録したDMM英会話の講師のレッスンに空きができた時にメールでお知らせするサービスです。" />
-  <meta property="og:site_name" content="lekcije" />
+  <meta property="og:description" content="AmamonitorはAmazonギフト券をオトクに手に入れるためのサービスです。" />
+  <meta property="og:site_name" content="Amamonitor" />
   <meta property="og:locale" content="ja_JP">
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:site" content="@lekcije">
-  <meta name="twitter:creator" content="@lekcije">
+  <meta name="twitter:site" content="@amamonitor">
+  <meta name="twitter:creator" content="@amamonitor">
   <meta name="twitter:url" content="{{ .CanonicalURL }}">
-  <meta name="twitter:title" content="{{ block "twitterTitle" . }}lekcije - DMM英会話のお気に入り講師をフォローしよう{{ end }}">
-  <meta name="twitter:description" content="lekcije(レクシエ)は、登録したDMM英会話の講師のレッスンに空きができた時にメールでお知らせするサービスです。">
+  <meta name="twitter:title" content="{{ block "twitterTitle" . }}Amamonitor - Amazonギフト券をオトクに手に入れよう{{ end }}">
+  <meta name="twitter:description" content="AmamonitorはAmazonギフト券をオトクに手に入れるためのサービスです。">
   <meta name="twitter:image" content="{{ .StaticURL }}/image/logoLarge.png">
 </head>
 <body>
@@ -68,12 +68,11 @@
       </div>
     </div>
   </nav>
-
-    {{- block "content" . }}
-      <div>
-        default block
-      </div>
-    {{- end }}
+  {{- block "content" . }}
+    <div>
+      default block
+    </div>
+  {{- end }}
   <footer class="container" style="padding-top:20px;">
     <p style="text-align:center; font-size:small">Copyright(C) lekcije all rights reserved.</p>
   </footer>
