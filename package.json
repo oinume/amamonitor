@@ -1,0 +1,20 @@
+{
+  "name": "amamonitor",
+  "version": "1.0.0",
+  "description": "",
+  "engines": {
+    "node": "8.9.4",
+    "npm": "5.6.0"
+  },
+  "scripts": {},
+  "devDependencies": {},
+  "dependencies": {
+    "@material-ui/core": "^4.5.1",
+    "@material-ui/icons": "^4.5.1",
+    "react": "^16.10.2",
+    "react-dom": "^16.10.2"
+  },
+  "author": "Kazuhiro Oinuma",
+  "license": "MIT",
+  "repository": "oinume/amamonitor"
+}
