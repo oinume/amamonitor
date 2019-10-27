@@ -8,6 +8,8 @@ require (
 	github.com/gorilla/mux v1.7.3
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/xo/dburl v0.0.0-20190814034758-0192e0fb89d1
+	golang.org/x/net v0.0.0-20191027093000-83d349e8ac1a // indirect
 	golang.org/x/sys v0.0.0-20190830142957-1e83adbbebd0 // indirect
 	google.golang.org/appengine v1.6.4 // indirect
+	gopkg.in/xmlpath.v2 v2.0.0-20150820204837-860cbeca3ebc // indirect
 )
