@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
@@ -113,4 +114,67 @@ func GetDefaultHTTPClient() *http.Client {
 	//}
 	//return defaultHTTPClient
 	return defaultHTTPClient
+}
+
+// TODO
+//fetcher.New(p Provider) Fetcher {
+//}
+// giftItems, err := fetcher.Fetch(ctx, options)
+/*
+func (f *Fetcher) Fetch(...) {
+	req, err := f.client.newRequest()
+	headers := f.client.getHeaders()
+    // setHeader
+    resp, err := f.httpClient.Do(req)
+    giftItems, err := f.client.parse(resp.Body)
+    return giftItems, err
+}
+*/
+
+type ProviderClient interface {
+	newRequest(options *FetchOptions) (*http.Request, error)
+	getHeaders() map[string]string
+	parse(body io.Reader) ([]*GiftItem, error)
+}
+
+type Fetcher struct {
+	client     ProviderClient
+	httpClient *http.Client
+}
+
+func (f *Fetcher) Fetch(ctx context.Context, options *FetchOptions) ([]*GiftItem, error) {
+	req, err := f.client.newRequest(options)
+	if err != nil {
+		return nil, err
+	}
+	headers := f.client.getHeaders()
+	for k, v := range headers {
+		req.Header.Set(k, v)
+	}
+	resp, err := f.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = resp.Body.Close() }()
+	return f.client.parse(resp.Body)
+}
+
+func NewWithClient(client ProviderClient) *Fetcher {
+	return &Fetcher{
+		client:     client,
+		httpClient: GetDefaultHTTPClient(),
+	}
+}
+
+func NewFromProvider(p Provider) (*Fetcher, error) {
+	var c ProviderClient
+	switch p {
+	case AmatenProvider:
+		c = NewAmatenClient()
+	case GiftissueProvider:
+		c = NewGiftissueClient()
+	default:
+		return nil, fmt.Errorf("NewFromProvider failed (unknown provider)")
+	}
+	return NewWithClient(c), nil
 }

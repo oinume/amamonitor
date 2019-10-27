@@ -12,14 +12,36 @@ const (
 	giftissueTargetURL = "https://giftissue.com/ja/category/amazonjp/"
 )
 
-func NewGiftissueClient() (*giftissueClient, error) {
-	return &giftissueClient{
-		httpClient: GetDefaultHTTPClient(),
-	}, nil
+func NewGiftissueClient() *giftissueClient {
+	return &giftissueClient{}
 }
 
 type giftissueClient struct {
 	httpClient *http.Client
+}
+
+func (c *giftissueClient) newRequest(options *FetchOptions) (*http.Request, error) {
+	targetURL := giftissueTargetURL
+	if options != nil && options.URL != "" {
+		targetURL = options.URL
+	}
+	return http.NewRequest("GET", targetURL, nil)
+}
+
+func (c *giftissueClient) getHeaders() map[string]string {
+	return map[string]string{
+		"User-Agent": UserAgent,
+		//"X-Requested-With": "XMLHttpRequest",
+		//"Referer":          "https://amaten.com/exhibitions/amazon",
+	}
+}
+
+func (c *giftissueClient) parse(body io.Reader) ([]*GiftItem, error) {
+	_, err := xmlpath.ParseHTML(body)
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }
 
 func (c *giftissueClient) Fetch(ctx context.Context, options *FetchOptions) ([]*GiftItem, error) {
