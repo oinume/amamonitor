@@ -25,7 +25,7 @@ func (p Provider) ModelValue() model.Provider {
 	case AmatenProvider:
 		return model.ProviderAmaten
 	case GiftissueProvider:
-		return model.ProviderAmaten // TODO
+		return model.ProviderGiftissue
 	}
 	return model.Provider(0)
 }
