@@ -26,9 +26,7 @@ func NewAmatenClient() *amatenClient {
 	return &amatenClient{}
 }
 
-type amatenClient struct {
-	httpClient *http.Client
-}
+type amatenClient struct{}
 
 func (c *amatenClient) newRequest(options *FetchOptions) (*http.Request, error) {
 	targetURL := amatenTargetURL

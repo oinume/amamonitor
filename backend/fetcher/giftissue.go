@@ -18,9 +18,7 @@ func NewGiftissueClient() *giftissueClient {
 	return &giftissueClient{}
 }
 
-type giftissueClient struct {
-	httpClient *http.Client
-}
+type giftissueClient struct{}
 
 func (c *giftissueClient) newRequest(options *FetchOptions) (*http.Request, error) {
 	targetURL := giftissueTargetURL
