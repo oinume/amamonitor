@@ -14,6 +14,13 @@ const (
 	giftissueTargetURL = "https://giftissue.com/ja/category/amazonjp/"
 )
 
+var (
+	giftListItemXPath = xmlpath.MustCompile(`//table/tbody/tr[@class='giftList_item']`)
+	faceValueXPath    = xmlpath.MustCompile(`td[contains(@class, 'giftList_cell-facevalue')]/span`)
+	priceXPath        = xmlpath.MustCompile(`td[contains(@class, 'giftList_cell-price')]/span`)
+	rateXPath         = xmlpath.MustCompile(`td[contains(@class, 'giftList_rate')]/span`)
+)
+
 func NewGiftissueClient() *giftissueClient {
 	return &giftissueClient{}
 }
@@ -37,10 +44,6 @@ func (c *giftissueClient) getHeaders() map[string]string {
 }
 
 func (c *giftissueClient) parse(body io.Reader) ([]*GiftItem, error) {
-	giftListItemXPath := xmlpath.MustCompile(`//table/tbody/tr[@class='giftList_item']`)
-	faceValueXPath := xmlpath.MustCompile(`td[contains(@class, 'giftList_cell-facevalue')]/span`)
-	priceXPath := xmlpath.MustCompile(`td[contains(@class, 'giftList_cell-price')]/span`)
-	rateXPath := xmlpath.MustCompile(`td[contains(@class, 'giftList_rate')]/span`)
 	root, err := xmlpath.ParseHTML(body)
 	if err != nil {
 		return nil, err
@@ -51,7 +54,7 @@ func (c *giftissueClient) parse(body io.Reader) ([]*GiftItem, error) {
 		node := iter.Node()
 		faceValueString, ok := faceValueXPath.String(node)
 		if !ok {
-			continue
+			return nil, fmt.Errorf("failed to parse faceValue with XPath")
 		}
 		faceValue, err := c.normalizeAmount(faceValueString)
 		if err != nil {
@@ -60,7 +63,7 @@ func (c *giftissueClient) parse(body io.Reader) ([]*GiftItem, error) {
 
 		priceString, ok := priceXPath.String(node)
 		if !ok {
-			continue
+			return nil, fmt.Errorf("failed to parse price with XPath")
 		}
 		price, err := c.normalizeAmount(priceString)
 		if err != nil {
@@ -69,7 +72,7 @@ func (c *giftissueClient) parse(body io.Reader) ([]*GiftItem, error) {
 
 		rateString, ok := rateXPath.String(node)
 		if !ok {
-			continue
+			return nil, fmt.Errorf("failed to parse rate with XPath")
 		}
 		rate, err := c.normalizeRate(rateString)
 		if err != nil {
@@ -77,7 +80,6 @@ func (c *giftissueClient) parse(body io.Reader) ([]*GiftItem, error) {
 		}
 
 		giftItem := NewGiftItem(GiftissueProvider, rate, faceValue, price)
-		//fmt.Printf("giftItem = %+v\n", giftItem)
 		giftItems = append(giftItems, giftItem)
 	}
 
