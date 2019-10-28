@@ -7,7 +7,6 @@ import (
 	"io"
 	"net"
 	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/oinume/amamonitor/backend/model"
@@ -16,8 +15,8 @@ import (
 type Provider string
 
 const (
-	AmatenProvider    Provider = "amaten.com"
-	GiftissueProvider Provider = "giftissue.com"
+	AmatenProvider    Provider = "amaten"
+	GiftissueProvider Provider = "giftissue"
 	UserAgent                  = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
 )
 
@@ -54,28 +53,6 @@ type GiftItem struct {
 
 type FetchOptions struct {
 	URL string
-}
-
-type Client interface {
-	Fetch(ctx context.Context, options *FetchOptions) ([]*GiftItem, error)
-}
-
-func NewClientFromProvider(p Provider) (Client, error) {
-	switch p {
-	case AmatenProvider:
-		return NewAmatenClient()
-	case GiftissueProvider:
-		return NewGiftissueClient()
-	}
-	return nil, fmt.Errorf("failed to new client (unknown url)")
-}
-
-func NewClientFromURL(urlStr string) (Client, error) {
-	u, err := url.Parse(urlStr)
-	if err != nil {
-		return nil, err
-	}
-	return NewClientFromProvider(Provider(u.Host))
 }
 
 var redirectErrorFunc = func(req *http.Request, via []*http.Request) error {
@@ -115,21 +92,6 @@ func GetDefaultHTTPClient() *http.Client {
 	//return defaultHTTPClient
 	return defaultHTTPClient
 }
-
-// TODO
-//fetcher.New(p Provider) Fetcher {
-//}
-// giftItems, err := fetcher.Fetch(ctx, options)
-/*
-func (f *Fetcher) Fetch(...) {
-	req, err := f.client.newRequest()
-	headers := f.client.getHeaders()
-    // setHeader
-    resp, err := f.httpClient.Do(req)
-    giftItems, err := f.client.parse(resp.Body)
-    return giftItems, err
-}
-*/
 
 type ProviderClient interface {
 	newRequest(options *FetchOptions) (*http.Request, error)
