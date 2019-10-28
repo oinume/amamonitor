@@ -4,9 +4,9 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/oinume/amamonitor/backend/model"
@@ -15,8 +15,8 @@ import (
 type Provider string
 
 const (
-	AmatenProvider    Provider = "amaten.com"
-	GiftissueProvider Provider = "giftissue.com"
+	AmatenProvider    Provider = "amaten"
+	GiftissueProvider Provider = "giftissue"
 	UserAgent                  = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
 )
 
@@ -25,7 +25,7 @@ func (p Provider) ModelValue() model.Provider {
 	case AmatenProvider:
 		return model.ProviderAmaten
 	case GiftissueProvider:
-		return model.ProviderAmaten // TODO
+		return model.ProviderGiftissue
 	}
 	return model.Provider(0)
 }
@@ -53,28 +53,6 @@ type GiftItem struct {
 
 type FetchOptions struct {
 	URL string
-}
-
-type Client interface {
-	Fetch(ctx context.Context, options *FetchOptions) ([]*GiftItem, error)
-}
-
-func NewClientFromProvider(p Provider) (Client, error) {
-	switch p {
-	case AmatenProvider:
-		return NewAmatenClient()
-	case GiftissueProvider:
-		return NewGiftissueClient()
-	}
-	return nil, fmt.Errorf("failed to new client (unknown url)")
-}
-
-func NewClientFromURL(urlStr string) (Client, error) {
-	u, err := url.Parse(urlStr)
-	if err != nil {
-		return nil, err
-	}
-	return NewClientFromProvider(Provider(u.Host))
 }
 
 var redirectErrorFunc = func(req *http.Request, via []*http.Request) error {
@@ -113,4 +91,52 @@ func GetDefaultHTTPClient() *http.Client {
 	//}
 	//return defaultHTTPClient
 	return defaultHTTPClient
+}
+
+type ProviderClient interface {
+	newRequest(options *FetchOptions) (*http.Request, error)
+	getHeaders() map[string]string
+	parse(body io.Reader) ([]*GiftItem, error)
+}
+
+type Fetcher struct {
+	client     ProviderClient
+	httpClient *http.Client
+}
+
+func (f *Fetcher) Fetch(ctx context.Context, options *FetchOptions) ([]*GiftItem, error) {
+	req, err := f.client.newRequest(options)
+	if err != nil {
+		return nil, err
+	}
+	headers := f.client.getHeaders()
+	for k, v := range headers {
+		req.Header.Set(k, v)
+	}
+	resp, err := f.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = resp.Body.Close() }()
+	return f.client.parse(resp.Body)
+}
+
+func NewWithClient(client ProviderClient) *Fetcher {
+	return &Fetcher{
+		client:     client,
+		httpClient: GetDefaultHTTPClient(),
+	}
+}
+
+func NewFromProvider(p Provider) (*Fetcher, error) {
+	var c ProviderClient
+	switch p {
+	case AmatenProvider:
+		c = NewAmatenClient()
+	case GiftissueProvider:
+		c = NewGiftissueClient()
+	default:
+		return nil, fmt.Errorf("NewFromProvider failed (unknown provider)")
+	}
+	return NewWithClient(c), nil
 }

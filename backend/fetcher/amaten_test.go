@@ -9,8 +9,7 @@ import (
 	"testing"
 )
 
-func Test_AmatenClient_Fetch(t *testing.T) {
-	// TODO: httptest.NewServer
+func Test_Fetcher_AmatenClient(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -39,8 +38,8 @@ func Test_AmatenClient_Fetch(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	c, _ := NewAmatenClient()
-	giftItems, err := c.Fetch(context.Background(), &FetchOptions{
+	fetcher := NewWithClient(NewAmatenClient())
+	giftItems, err := fetcher.Fetch(context.Background(), &FetchOptions{
 		URL: ts.URL,
 	})
 	if err != nil {
@@ -52,27 +51,9 @@ func Test_AmatenClient_Fetch(t *testing.T) {
 		NewGiftItem(AmatenProvider, "90.0", 1000, 900),
 	}
 	if len(giftItems) != len(want) {
-		t.Fatalf("unexpected giftItems length")
+		t.Fatalf("unexpected Fetch result giftItems length")
 	}
 	if got := giftItems; !reflect.DeepEqual(got, want) {
-		t.Errorf("unexpected Fetch result: got=%+v, want=%+v", got, want)
+		t.Errorf("unexpected Fetch result giftItems: got=%+v, want=%+v", got, want)
 	}
 }
-
-//func Test_amatenClient_FetchHTML(t *testing.T) {
-//	c, _ := NewAmatenClient()
-//	html, err := c.FetchHTML(context.Background(), fetchURL)
-//	if err != nil {
-//		t.Fatal(err)
-//	}
-//	fmt.Printf("--- HTML ---\n%s\n", html)
-//}
-/*
-{
-  "user_signed_in": false,
-  "gifts": [
-    {
-      "id": 3840869,
-      "revision": 1,
-      "f
-*/

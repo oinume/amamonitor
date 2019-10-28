@@ -61,11 +61,9 @@ func (m *fetcherMain) run(args []string) error {
 		)
 	}
 
-	client, err := fetcher.NewClientFromURL("https://amaten.com")
-	if err != nil {
-		return err
-	}
-	giftCards, err := client.Fetch(context.Background(), &fetcher.FetchOptions{})
+	// TODO: giftissue
+	f := fetcher.NewWithClient(fetcher.NewAmatenClient())
+	giftCards, err := f.Fetch(context.Background(), &fetcher.FetchOptions{})
 	if err != nil {
 		return err
 	}
