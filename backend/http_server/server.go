@@ -35,7 +35,13 @@ func (s *server) NewRouter() *mux.Router {
 }
 
 func (s *server) fetcher(w http.ResponseWriter, r *http.Request) {
-	amaten, err := fetcher.NewAmatenClient()
+	vars := mux.Vars(r)
+	provider, ok := vars["provider"]
+	if !ok {
+		http.Error(w, "no provider", http.StatusBadRequest)
+	}
+
+	f, err := fetcher.NewFromProvider(fetcher.Provider(provider))
 	if err != nil {
 		internalServerError(w, err)
 		return
@@ -45,10 +51,10 @@ func (s *server) fetcher(w http.ResponseWriter, r *http.Request) {
 	}
 
 	options := new(fetcher.FetchOptions)
-	if amatenURL := r.FormValue("amatenUrl"); amatenURL != "" {
-		options.URL = amatenURL
+	if u := r.FormValue("url"); u != "" {
+		options.URL = u
 	}
-	fetchedGiftItems, err := amaten.Fetch(r.Context(), options)
+	fetchedGiftItems, err := f.Fetch(r.Context(), options)
 	if err != nil {
 		internalServerError(w, err)
 		return

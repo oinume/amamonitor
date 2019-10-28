@@ -1,7 +1,6 @@
 package fetcher
 
 import (
-	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -23,48 +22,31 @@ type AmatenGift struct {
 	Rate      string `json:"rate"`
 }
 
-func NewAmatenClient() (*amatenClient, error) {
-	return &amatenClient{
-		httpClient: GetDefaultHTTPClient(),
-	}, nil
+func NewAmatenClient() *amatenClient {
+	return &amatenClient{}
 }
 
-type amatenClient struct {
-	httpClient *http.Client
-}
+type amatenClient struct{}
 
-func (c *amatenClient) Fetch(ctx context.Context, options *FetchOptions) ([]*GiftItem, error) {
+func (c *amatenClient) newRequest(options *FetchOptions) (*http.Request, error) {
 	targetURL := amatenTargetURL
-	if options.URL != "" {
+	if options != nil && options.URL != "" {
 		targetURL = options.URL
 	}
-	req, err := http.NewRequest("GET", targetURL, nil)
-	if err != nil {
-		return nil, err
-	}
-	c.setHeaders(req)
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer func() { _ = resp.Body.Close() }()
-	return c.decodeJSON(resp.Body)
+	return http.NewRequest("GET", targetURL, nil)
 }
 
-func (c *amatenClient) setHeaders(req *http.Request) {
-	headers := map[string]string{
+func (c *amatenClient) getHeaders() map[string]string {
+	return map[string]string{
 		"User-Agent":       UserAgent,
 		"Sec-Fetch-Mode":   "cors",
 		"Accept":           "application/json, text/javascript, */*; q=0.01",
 		"X-Requested-With": "XMLHttpRequest",
 		"Referer":          "https://amaten.com/exhibitions/amazon",
 	}
-	for k, v := range headers {
-		req.Header.Set(k, v)
-	}
 }
 
-func (c *amatenClient) decodeJSON(reader io.Reader) ([]*GiftItem, error) {
+func (c *amatenClient) parse(body io.Reader) ([]*GiftItem, error) {
 	/* response
 	   {
 	     "id": 3834718,
@@ -80,7 +62,7 @@ func (c *amatenClient) decodeJSON(reader io.Reader) ([]*GiftItem, error) {
 	   }
 	*/
 	var r AmatenGiftResponse
-	if err := json.NewDecoder(reader).Decode(&r); err != nil {
+	if err := json.NewDecoder(body).Decode(&r); err != nil {
 		return nil, err
 	}
 	//fmt.Printf("r.gifts = %+v\n", r.Gifts)
@@ -90,6 +72,7 @@ func (c *amatenClient) decodeJSON(reader io.Reader) ([]*GiftItem, error) {
 		giftItems[i] = NewGiftItem(AmatenProvider, gift.Rate, gift.FaceValue, gift.Price)
 	}
 	return giftItems, nil
+
 }
 
 func NewFakeAmatenAPIGiftsHandler(t *testing.T, gifts []AmatenGift) func(w http.ResponseWriter, r *http.Request) {

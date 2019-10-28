@@ -14,6 +14,9 @@ type Provider uint16
 const (
 	// ProviderAmaten is the 'amaten' Provider.
 	ProviderAmaten = Provider(1)
+
+	// ProviderGiftissue is the 'giftissue' Provider.
+	ProviderGiftissue = Provider(2)
 )
 
 // String returns the string value of the Provider.
@@ -23,6 +26,9 @@ func (p Provider) String() string {
 	switch p {
 	case ProviderAmaten:
 		enumVal = "amaten"
+
+	case ProviderGiftissue:
+		enumVal = "giftissue"
 	}
 
 	return enumVal
@@ -38,6 +44,9 @@ func (p *Provider) UnmarshalText(text []byte) error {
 	switch string(text) {
 	case "amaten":
 		*p = ProviderAmaten
+
+	case "giftissue":
+		*p = ProviderGiftissue
 
 	default:
 		return errors.New("invalid Provider")

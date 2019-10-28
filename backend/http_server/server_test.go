@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/gorilla/mux"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/oinume/amamonitor/backend/config"
 	"github.com/oinume/amamonitor/backend/fetcher"
@@ -57,15 +59,17 @@ func Test_server_fetcher(t *testing.T) {
 		path           string
 		query          map[string]string
 		handler        http.HandlerFunc
+		routerPath     string
 		wantStatusCode int
 	}{
 		"fetcher_ok": {
 			method: "GET",
-			path:   "/fetcher/all",
+			path:   "/fetcher/amaten",
 			query: map[string]string{
-				"amatenUrl": ts.URL,
+				"url": ts.URL,
 			},
 			handler:        server.fetcher,
+			routerPath:     "/fetcher/{provider}",
 			wantStatusCode: http.StatusOK,
 			// TODO: bodyValidator
 		},
@@ -85,7 +89,10 @@ func Test_server_fetcher(t *testing.T) {
 			rr := httptest.NewRecorder()
 			defer func() { _ = rr.Result().Body.Close() }()
 
-			test.handler(rr, req)
+			router := mux.NewRouter()
+			router.HandleFunc(test.routerPath, test.handler).Methods(test.method)
+			router.ServeHTTP(rr, req)
+
 			result := rr.Result()
 			if result.StatusCode != test.wantStatusCode {
 				t.Errorf("unexpected status code: got=%v, want=%v", result.StatusCode, test.wantStatusCode)
