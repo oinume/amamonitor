@@ -21,3 +21,4 @@ amamonitor.pid
 
 # frontend
 /node_modules
+/static

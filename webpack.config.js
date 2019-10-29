@@ -23,8 +23,10 @@ var plugins = [
     // { context: nodeModulesPath, from: 'bootstrap/dist/**', to: 'lib' },
     // { context: nodeModulesPath, from: 'bootswatch/dist/yeti/**', to: 'lib' },
     // { context: nodeModulesPath, from: 'jquery/dist/**', to: 'lib' },
-    // { context: nodeModulesPath, from: 'react/umd/**', to: 'lib' },
-    // { context: nodeModulesPath, from: 'react-dom/umd/**', to: 'lib' },
+    { context: nodeModulesPath, from: 'react/umd/react.*', to: 'lib' },
+    { context: nodeModulesPath, from: 'react-dom/umd/react-dom.*', to: 'lib' },
+    { context: nodeModulesPath, from: '@material-ui/core/umd/material-ui*', to: 'lib'},
+    { context: nodeModulesPath, from: '@material-ui/icons/**', to: 'lib'}
   ])
 ];
 
@@ -39,8 +41,10 @@ if (process.env.WEBPACK_DEV_SERVER === 'true') {
       // {from: nodeModulesPath + "/bootstrap", to: 'lib'},
       // {from: nodeModulesPath + "/bootswatch", to: 'lib'},
       // {from: nodeModulesPath + "/jquery", to: 'lib'},
-      // {from: nodeModulesPath + "/react", to: 'lib'},
-      // {from: nodeModulesPath + "/react-dom", to: 'lib'},
+      {from: nodeModulesPath + "/react", to: 'lib'},
+      {from: nodeModulesPath + "/react-dom", to: 'lib'},
+      {from: nodeModulesPath + "/@material-ui", to: 'lib'},
+      //{from: nodeModulesPath + "/react-dom", to: 'lib'},
     ], path.resolve(__dirname, "frontend"))
   );
 }
@@ -62,13 +66,13 @@ const config = {
     filename: "js/[name].bundle.js",
     chunkFilename: "js/[name].chunk.js"
   },
-  // externals: {
-  //   'jquery': 'jQuery',
-  //   'react': 'React',
-  //   'react-dom': 'ReactDOM',
-  //   'bootstrap': 'bootstrap',
-  //   'bootswatch': 'bootswatch',
-  // },
+  externals: {
+//    'jquery': 'jQuery',
+    'react': 'React',
+    'react-dom': 'ReactDOM',
+//    'bootstrap': 'bootstrap',
+//    'bootswatch': 'bootswatch',
+  },
   optimization: {
     runtimeChunk: {
       name: 'vendor'
