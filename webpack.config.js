@@ -28,6 +28,7 @@ var plugins = [
     { context: nodeModulesPath, from: 'popper.js/dist/popper.*', to: 'lib'},
     { context: nodeModulesPath, from: 'react/umd/react.*', to: 'lib' },
     { context: nodeModulesPath, from: 'react-dom/umd/react-dom.*', to: 'lib' },
+    { context: nodeModulesPath, from: '@fortawesome/fontawesome-free', to: 'lib/fontawesome-free' },
   ])
 ];
 
@@ -39,14 +40,13 @@ if (process.env.WEBPACK_DEV_SERVER === 'true') {
       {from: 'css'},
       {from: 'html'},
       {from: 'image'},
-      {from: nodeModulesPath + "/bootstrap", to: 'lib'},
-      {from: nodeModulesPath + "/bootswatch", to: 'lib'},
-      {from: nodeModulesPath + "/jquery", to: 'lib'},
-      {from: nodeModulesPath + "/popper.js", to: 'lib'},
-      {from: nodeModulesPath + "/react", to: 'lib'},
-      {from: nodeModulesPath + "/react-dom", to: 'lib'},
-      {from: nodeModulesPath + "/@material-ui", to: 'lib'},
-      //{from: nodeModulesPath + "/react-dom", to: 'lib'},
+      {from: nodeModulesPath + '/bootstrap', to: 'lib'},
+      {from: nodeModulesPath + '/bootswatch', to: 'lib'},
+      {from: nodeModulesPath + '/jquery', to: 'lib'},
+      {from: nodeModulesPath + '/popper.js', to: 'lib'},
+      {from: nodeModulesPath + '/react', to: 'lib'},
+      {from: nodeModulesPath + '/react-dom', to: 'lib'},
+      {from: nodeModulesPath + '/@fortawesome/fontawesome-free', to: 'lib/fontawesome-free' },
     ], path.resolve(__dirname, "frontend"))
   );
 }

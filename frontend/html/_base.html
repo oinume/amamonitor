@@ -11,13 +11,10 @@
     {{- block "headCss" . }}
       <link rel="stylesheet" type="text/css" href="{{ .StaticURL }}/css/main.css">
     {{- end }}
-  <script src="{{ .StaticURL }}/lib/react/umd/react.development.js" crossorigin="anonymous"></script>
-  <script src="{{ .StaticURL }}/lib/react-dom/umd/react-dom.development.js"></script>
-  <script src="{{ .StaticURL }}/lib/@material-ui/core/umd/material-ui.development.js" crossorigin="anonymous"></script>
-  <!-- Fonts to support Material Design -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
-  <!-- Icons to support Material Design -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link rel="stylesheet" type="text/css" href="{{ .StaticURL }}/lib/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ .StaticURL }}/lib/bootswatch/dist/materia/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ .StaticURL }}/css/main.css">
+  <link rel="stylesheet" type="text/css" href="{{ .StaticURL }}/lib/fontawesome-free/css/all.min.css">
 
   <link rel="icon" href="{{ .StaticURL }}/image/logo.png" type="image/png">
   <link rel="apple-touch-icon" href="{{ .StaticURL }}/image/logo.png">
@@ -97,6 +94,10 @@
         s.parentNode.insertBefore(wf, s);
     })();
 </script>
+<script src="{{ .StaticURL }}/lib/jquery/dist/jquery.min.js"></script>
+<script src="{{ .StaticURL }}/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="{{ .StaticURL }}/lib/react/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="{{ .StaticURL }}/lib/react-dom/umd/react-dom.development.js"></script>
 <script src="{{ .StaticURL }}/js/vendor.bundle.js"></script>
 <script src="{{ .StaticURL }}/js/main.chunk.js"></script>
 {{- block "extraJs" . }}<!-- Put extra js here -->{{- end }}
