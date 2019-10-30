@@ -8,6 +8,8 @@ const nodeModulesPath = path.resolve(__dirname, 'node_modules');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TransferWebpackPlugin = require('transfer-webpack-plugin'); // dev-server only
 
+const version_hash = process.env.VERSION_HASH ? process.env.VERSION_HASH : '_version_';
+
 var devtool = 'source-map'; // Render source-map file for final build
 var plugins = [
   new CopyWebpackPlugin([
@@ -20,13 +22,12 @@ var plugins = [
     { context: 'frontend', from: '**/*.ttf' },
     { context: 'frontend', from: '**/*.woff' },
     { context: 'frontend', from: '**/*.woff2' },
-    // { context: nodeModulesPath, from: 'bootstrap/dist/**', to: 'lib' },
-    // { context: nodeModulesPath, from: 'bootswatch/dist/yeti/**', to: 'lib' },
-    // { context: nodeModulesPath, from: 'jquery/dist/**', to: 'lib' },
+    { context: nodeModulesPath, from: 'bootstrap/dist/**', to: 'lib' },
+    { context: nodeModulesPath, from: 'bootswatch/dist/yeti/**', to: 'lib' },
+    { context: nodeModulesPath, from: 'jquery/dist/**', to: 'lib' },
+    { context: nodeModulesPath, from: 'popper.js/dist/popper.*', to: 'lib'}
     { context: nodeModulesPath, from: 'react/umd/react.*', to: 'lib' },
     { context: nodeModulesPath, from: 'react-dom/umd/react-dom.*', to: 'lib' },
-    { context: nodeModulesPath, from: '@material-ui/core/umd/material-ui*', to: 'lib'},
-    { context: nodeModulesPath, from: '@material-ui/icons/**', to: 'lib'}
   ])
 ];
 
@@ -38,9 +39,10 @@ if (process.env.WEBPACK_DEV_SERVER === 'true') {
       {from: 'css'},
       {from: 'html'},
       {from: 'image'},
-      // {from: nodeModulesPath + "/bootstrap", to: 'lib'},
-      // {from: nodeModulesPath + "/bootswatch", to: 'lib'},
-      // {from: nodeModulesPath + "/jquery", to: 'lib'},
+      {from: nodeModulesPath + "/bootstrap", to: 'lib'},
+      {from: nodeModulesPath + "/bootswatch", to: 'lib'},
+      {from: nodeModulesPath + "/jquery", to: 'lib'},
+      {from: nodeModulesPath + "/popper.js", to: 'lib'},
       {from: nodeModulesPath + "/react", to: 'lib'},
       {from: nodeModulesPath + "/react-dom", to: 'lib'},
       {from: nodeModulesPath + "/@material-ui", to: 'lib'},
@@ -61,17 +63,18 @@ const config = {
     //node_modules: ["web_modules", "node_modules"]  (Default Settings)
   },
   output: {
-    path: path.join(buildPath, process.env.VERSION_HASH),
-    publicPath: path.join('/static', process.env.VERSION_HASH),
+    path: path.join(buildPath, version_hash),
+    publicPath: path.join('/static', version_hash),
     filename: "js/[name].bundle.js",
     chunkFilename: "js/[name].chunk.js"
   },
   externals: {
-//    'jquery': 'jQuery',
+    'bootstrap': 'bootstrap',
+    'bootswatch': 'bootswatch',
+    'jquery': 'jQuery',
+    'popper.js': 'popper.js',
     'react': 'React',
     'react-dom': 'ReactDOM',
-//    'bootstrap': 'bootstrap',
-//    'bootswatch': 'bootswatch',
   },
   optimization: {
     runtimeChunk: {
