@@ -25,7 +25,7 @@ var plugins = [
     { context: nodeModulesPath, from: 'bootstrap/dist/**', to: 'lib' },
     { context: nodeModulesPath, from: 'bootswatch/dist/yeti/**', to: 'lib' },
     { context: nodeModulesPath, from: 'jquery/dist/**', to: 'lib' },
-    { context: nodeModulesPath, from: 'popper.js/dist/popper.*', to: 'lib'}
+    { context: nodeModulesPath, from: 'popper.js/dist/popper.*', to: 'lib'},
     { context: nodeModulesPath, from: 'react/umd/react.*', to: 'lib' },
     { context: nodeModulesPath, from: 'react-dom/umd/react-dom.*', to: 'lib' },
   ])
