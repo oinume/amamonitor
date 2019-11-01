@@ -18,3 +18,9 @@
 amamonitor.pid
 
 /tools/bin
+
+# frontend
+/node_modules
+/static
+
+.DS_Store

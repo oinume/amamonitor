@@ -3,24 +3,26 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>{{ block "title" . }}Amamonitor - TODO{{ end }}</title>
+  <title>{{ block "title" . }}Amamonitor - Amazonでオトクに買い物しよう{{ end }}</title>
   <meta name="description" content="AmamonitorはAmazonギフト券をオトクに手に入れるためのサービスです。" />
   <meta name="keywords" content="amamonitor,アマモニター,Amazonギフト券,アマゾンギフト券" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0, maximum-scale=1, minimum-scale=1" />
   <link rel="canonical" href="{{ .CanonicalURL }}" />
     {{- block "headCss" . }}
-      <link rel="stylesheet" type="text/css" href="{{ .StaticURL }}/lib/bootstrap/dist/css/bootstrap.min.css">
-      <link rel="stylesheet" type="text/css" href="{{ .StaticURL }}/lib/bootswatch/dist/yeti/bootstrap.min.css">
       <link rel="stylesheet" type="text/css" href="{{ .StaticURL }}/css/main.css">
-      <link rel="stylesheet" type="text/css" href="{{ .StaticURL }}/lib/fontawesome/web-fonts-with-css/css/fontawesome-all.min.css">
     {{- end }}
+  <link rel="stylesheet" type="text/css" href="{{ .StaticURL }}/lib/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ .StaticURL }}/lib/bootswatch/dist/cosmo/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ .StaticURL }}/css/main.css">
+  <link rel="stylesheet" type="text/css" href="{{ .StaticURL }}/lib/fontawesome-free/css/all.min.css">
+
   <link rel="icon" href="{{ .StaticURL }}/image/logo.png" type="image/png">
   <link rel="apple-touch-icon" href="{{ .StaticURL }}/image/logo.png">
   <!-- Facebook OpenGraph -->
   <meta property="fb:app_id" content="552348908286128" />
   <meta property="og:url" content="{{ .CanonicalURL }}" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="{{ block "ogTitle" . }}Amamonitor - Amazonギフト券をオトクに手に入れよう{{ end }}">
+  <meta property="og:title" content="{{ block "ogTitle" . }}Amamonitor - Amazonでオトクに買い物しよう{{ end }}">
   <meta property="og:image" content="{{ .StaticURL }}/image/logoLarge.png">
   <meta property="og:description" content="AmamonitorはAmazonギフト券をオトクに手に入れるためのサービスです。" />
   <meta property="og:site_name" content="Amamonitor" />
@@ -30,7 +32,7 @@
   <meta name="twitter:site" content="@amamonitor">
   <meta name="twitter:creator" content="@amamonitor">
   <meta name="twitter:url" content="{{ .CanonicalURL }}">
-  <meta name="twitter:title" content="{{ block "twitterTitle" . }}Amamonitor - Amazonギフト券をオトクに手に入れよう{{ end }}">
+  <meta name="twitter:title" content="{{ block "twitterTitle" . }}Amamonitor - Amazonでオトクに買い物しよう{{ end }}">
   <meta name="twitter:description" content="AmamonitorはAmazonギフト券をオトクに手に入れるためのサービスです。">
   <meta name="twitter:image" content="{{ .StaticURL }}/image/logoLarge.png">
 </head>
@@ -39,7 +41,7 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
       <div class="row">
-        <div class="col order-first"><a class="navbar-brand" href="/">lekcije</a></div>
+        <div class="col order-first"><a class="navbar-brand" href="/">Amamonitor</a></div>
       </div>
       <div class="row">
         <div class="col order-last">
@@ -74,7 +76,7 @@
     </div>
   {{- end }}
   <footer class="container" style="padding-top:20px;">
-    <p style="text-align:center; font-size:small">Copyright(C) lekcije all rights reserved.</p>
+    <p style="text-align:center; font-size:small">Copyright(C) amamonitor all rights reserved.</p>
   </footer>
 </div>
 <!-- This script adds the Roboto font to our project. For more detail go to this site:  http://www.google.com/fonts#UsePlace:use/Collection:Roboto:400,300,500 -->
@@ -94,6 +96,8 @@
 </script>
 <script src="{{ .StaticURL }}/lib/jquery/dist/jquery.min.js"></script>
 <script src="{{ .StaticURL }}/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="{{ .StaticURL }}/lib/react/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="{{ .StaticURL }}/lib/react-dom/umd/react-dom.development.js"></script>
 <script src="{{ .StaticURL }}/js/vendor.bundle.js"></script>
 <script src="{{ .StaticURL }}/js/main.chunk.js"></script>
 {{- block "extraJs" . }}<!-- Put extra js here -->{{- end }}
