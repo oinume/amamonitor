@@ -39,6 +39,7 @@ func (s *server) fetcher(w http.ResponseWriter, r *http.Request) {
 	provider, ok := vars["provider"]
 	if !ok {
 		http.Error(w, "no provider", http.StatusBadRequest)
+		return
 	}
 
 	f, err := fetcher.NewFromProvider(fetcher.Provider(provider))
@@ -48,6 +49,7 @@ func (s *server) fetcher(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := r.ParseForm(); err != nil {
 		internalServerError(w, err)
+		return
 	}
 
 	options := new(fetcher.FetchOptions)
