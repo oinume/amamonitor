@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/gorilla/mux"
-
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/oinume/amamonitor/backend/config"
 	"github.com/oinume/amamonitor/backend/fetcher"
@@ -89,9 +87,7 @@ func Test_server_fetcher(t *testing.T) {
 			rr := httptest.NewRecorder()
 			defer func() { _ = rr.Result().Body.Close() }()
 
-			router := mux.NewRouter()
-			router.HandleFunc(test.routerPath, test.handler).Methods(test.method)
-			router.ServeHTTP(rr, req)
+			test.handler.ServeHTTP(rr, req)
 
 			result := rr.Result()
 			if result.StatusCode != test.wantStatusCode {

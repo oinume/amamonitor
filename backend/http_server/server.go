@@ -9,10 +9,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/oinume/amamonitor/backend/fetcher"
 	"github.com/oinume/amamonitor/backend/model"
 	"github.com/oinume/amamonitor/backend/service"
+	goji "goji.io"
+	"goji.io/pat"
 )
 
 type server struct {
@@ -27,17 +28,16 @@ func New(db *sql.DB, svc *service.Service) *server {
 	}
 }
 
-func (s *server) NewRouter() *mux.Router {
-	r := mux.NewRouter()
-	r.HandleFunc("/fetcher/{provider}", s.fetcher).Methods("GET")
-	r.HandleFunc("/", s.index).Methods("GET")
-	return r
+func (s *server) NewRouter() *goji.Mux {
+	mux := goji.NewMux()
+	mux.HandleFunc(pat.Get("/fetcher/{provider}"), s.fetcher)
+	mux.HandleFunc(pat.Get("/"), s.index)
+	return mux
 }
 
 func (s *server) fetcher(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	provider, ok := vars["provider"]
-	if !ok {
+	provider := pat.Param(r, "provider")
+	if provider == "" {
 		http.Error(w, "no provider", http.StatusBadRequest)
 		return
 	}
