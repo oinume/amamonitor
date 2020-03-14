@@ -22,6 +22,7 @@ setup: install-lint install-tools
 install-tools: install-linter
 	cd tools && go install \
 		github.com/xo/xo \
+		github.com/volatiletech/sqlboiler \
 		github.com/pressly/goose/cmd/goose
 
 .PHONY: install-linter

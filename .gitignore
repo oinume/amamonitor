@@ -18,3 +18,5 @@
 amamonitor.pid
 
 /tools/bin
+/tools/sqlboiler.toml
+
